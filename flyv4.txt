@@ -1,0 +1,124 @@
+-- Minimal Fly GUI (аналог FlyGuiV3, но компактный)
+local p = game.Players.LocalPlayer
+local m = Instance.new("ScreenGui")
+local f = Instance.new("Frame")
+local b = {} -- кнопки
+
+-- GUI
+m.Parent = p:WaitForChild("PlayerGui")
+f.Parent = m
+f.Size = UDim2.new(0,130,0,110)
+f.Position = UDim2.new(0.5,-65,0.5,-55)
+f.BackgroundColor3 = Color3.fromRGB(40,40,40)
+f.Active = true
+f.Draggable = true
+
+local btn = {"UP","DOWN","+","-","FLY"}
+local y = 0
+for _,t in ipairs(btn) do
+    b[t] = Instance.new("TextButton",f)
+    b[t].Size = UDim2.new(0,55,0,25)
+    b[t].Position = UDim2.new(0,5,0,y)
+    b[t].Text = t
+    b[t].BackgroundColor3 = Color3.fromRGB(80,80,80)
+    b[t].TextColor3 = Color3.new(1,1,1)
+    y = y + 30
+end
+
+b["+"].Position = UDim2.new(0,70,0,30)
+b["-"].Position = UDim2.new(0,70,0,60)
+b.FLY.BackgroundColor3 = Color3.fromRGB(200,50,50)
+
+local spd = Instance.new("TextLabel",f)
+spd.Size = UDim2.new(0,40,0,25)
+spd.Position = UDim2.new(0,70,0,0)
+spd.Text = "1x"
+spd.TextColor3 = Color3.new(1,1,1)
+
+local fly = false
+local vel, gyro
+local speed = 1
+local keys = {f=0,b=0,l=0,r=0}
+
+-- Управление
+game:GetService("UserInputService").InputBegan:Connect(function(i)
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then keys.f = 1
+    elseif k == Enum.KeyCode.S then keys.b = 1
+    elseif k == Enum.KeyCode.A then keys.l = 1
+    elseif k == Enum.KeyCode.D then keys.r = 1
+    end
+end)
+game:GetService("UserInputService").InputEnded:Connect(function(i)
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then keys.f = 0
+    elseif k == Enum.KeyCode.S then keys.b = 0
+    elseif k == Enum.KeyCode.A then keys.l = 0
+    elseif k == Enum.KeyCode.D then keys.r = 0
+    end
+end)
+
+-- Функция полёта
+local function setFly(on)
+    fly = on
+    local c = p.Character
+    if not c then return end
+    local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+    local h = c.Humanoid
+    if not torso or not h then return end
+    
+    if fly then
+        vel = Instance.new("BodyVelocity",torso)
+        vel.maxForce = Vector3.new(1e9,1e9,1e9)
+        gyro = Instance.new("BodyGyro",torso)
+        gyro.maxTorque = Vector3.new(1e9,1e9,1e9)
+        gyro.P = 9e4
+        h.PlatformStand = true
+        h:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+    else
+        if vel then vel:Destroy() end
+        if gyro then gyro:Destroy() end
+        h.PlatformStand = false
+        h:SetStateEnabled(Enum.HumanoidStateType.Jumping,true)
+    end
+end
+
+-- Цикл полёта
+game:GetService("RunService").Heartbeat:Connect(function()
+    if not fly or not p.Character then return end
+    local cam = workspace.CurrentCamera
+    local move = Vector3.new(keys.r-keys.l, 0, keys.f-keys.b)
+    if move.Magnitude > 0 then move = move.Unit end
+    local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * speed
+    if vel then vel.Velocity = velVec end
+    if gyro then gyro.CFrame = cam.CFrame end
+end)
+
+-- Кнопки
+b.FLY.MouseButton1Click:Connect(function() setFly(not fly) end)
+b.UP.MouseButton1Down:Connect(function()
+    local con
+    con = game:GetService("RunService").RenderStepped:Connect(function()
+        if p.Character and p.Character.HumanoidRootPart then
+            p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0,1,0)
+        end
+    end)
+    b.UP.MouseLeave:Connect(function() con:Disconnect() end)
+end)
+b.DOWN.MouseButton1Down:Connect(function()
+    local con
+    con = game:GetService("RunService").RenderStepped:Connect(function()
+        if p.Character and p.Character.HumanoidRootPart then
+            p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,0)
+        end
+    end)
+    b.DOWN.MouseLeave:Connect(function() con:Disconnect() end)
+end)
+
+b["+"].MouseButton1Click:Connect(function() speed = math.min(speed+1,20) spd.Text = speed.."x" end)
+b["-"].MouseButton1Click:Connect(function() speed = math.max(speed-1,1) spd.Text = speed.."x" end)
+
+-- Перерождение
+p.CharacterAdded:Connect(function() wait(0.5) fly = false setFly(false) end)
+
+print("Fly GUI loaded — нажми FLY")
