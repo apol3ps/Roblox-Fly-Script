@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/apol3ps/Roblox-Fly-Script/refs/heads/main/flyv4.txt"))()
