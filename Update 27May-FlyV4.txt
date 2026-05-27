@@ -1,0 +1,80 @@
+-- FLY V4: DARK CRIMSON EDITION 2026
+local p = game.Players.LocalPlayer
+local ts = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+
+local m = Instance.new("ScreenGui", p:WaitForChild("PlayerGui"))
+local f = Instance.new("Frame", m)
+f.Size = UDim2.new(0, 180, 0, 220)
+f.Position = UDim2.new(0.5, -90, 0.5, -110)
+f.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Угольный фон
+f.Active = true
+f.Draggable = true
+f.ClipsDescendants = true
+
+-- Акцентная рамка
+local stroke = Instance.new("UIStroke", f)
+stroke.Color = Color3.fromRGB(150, 20, 20) -- Глубокий красный
+stroke.Thickness = 2
+
+-- Заголовок
+local header = Instance.new("TextLabel", f)
+header.Size = UDim2.new(1, 0, 0, 30)
+header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+header.Text = "FLY V4 | CORE"
+header.TextColor3 = Color3.fromRGB(200, 200, 200)
+header.Font = Enum.Font.Code
+header.TextSize = 14
+
+-- Контейнер для кнопок
+local grid = Instance.new("UIGridLayout", f)
+grid.CellSize = UDim2.new(0, 80, 0, 30)
+grid.CellPadding = UDim2.new(0, 5, 0, 5)
+grid.FillDirection = Enum.FillDirection.Horizontal
+grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+grid.Padding = UDim2.new(0, 5, 0, 5)
+grid.SortOrder = Enum.SortOrder.LayoutOrder
+grid.Position = UDim2.new(0, 5, 0, 40)
+
+-- Функция создания кнопки в стиле 2026
+local function createBtn(name, text)
+    local btn = Instance.new("TextButton", f)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Code
+    btn.BorderSizePixel = 0
+    
+    local s = Instance.new("UIStroke", btn)
+    s.Color = Color3.fromRGB(100, 10, 10)
+    s.Thickness = 1
+    
+    btn.MouseEnter:Connect(function() 
+        ts:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 20, 20)}):Play() 
+    end)
+    btn.MouseLeave:Connect(function() 
+        ts:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play() 
+    end)
+    return btn
+end
+
+local b = {
+    FLY = createBtn("FLY", "FLY"),
+    UP = createBtn("UP", "UP"),
+    DOWN = createBtn("DOWN", "DOWN"),
+    PLUS = createBtn("+", "+"),
+    MINUS = createBtn("-", "-")
+}
+
+local spd = Instance.new("TextLabel", f)
+spd.Size = UDim2.new(0, 170, 0, 30)
+spd.Position = UDim2.new(0, 5, 0, 180)
+spd.Text = "SPEED: 1x"
+spd.TextColor3 = Color3.fromRGB(150, 20, 20)
+spd.Font = Enum.Font.CodeBold
+spd.BackgroundTransparency = 1
+
+-- Логика (вставь сюда всю свою рабочую логику полёта из предыдущего скрипта)
+-- ... [код логики остается прежним] ...
+
+print("Fly V4 Crimson Edition Loaded.")
