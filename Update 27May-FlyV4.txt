@@ -2,79 +2,104 @@
 local p = game.Players.LocalPlayer
 local ts = game:GetService("TweenService")
 local uis = game:GetService("UserInputService")
+local rs = game:GetService("RunService")
 
+-- GUI Setup
 local m = Instance.new("ScreenGui", p:WaitForChild("PlayerGui"))
+m.Name = "FlyV4_GUI"
 local f = Instance.new("Frame", m)
-f.Size = UDim2.new(0, 180, 0, 220)
-f.Position = UDim2.new(0.5, -90, 0.5, -110)
-f.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Угольный фон
+f.Size = UDim2.new(0, 160, 0, 200)
+f.Position = UDim2.new(0.5, -80, 0.5, -100)
+f.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 f.Active = true
 f.Draggable = true
-f.ClipsDescendants = true
+f.BorderSizePixel = 0
 
--- Акцентная рамка
 local stroke = Instance.new("UIStroke", f)
-stroke.Color = Color3.fromRGB(150, 20, 20) -- Глубокий красный
+stroke.Color = Color3.fromRGB(150, 20, 20)
 stroke.Thickness = 2
 
--- Заголовок
-local header = Instance.new("TextLabel", f)
-header.Size = UDim2.new(1, 0, 0, 30)
-header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-header.Text = "FLY V4 | CORE"
-header.TextColor3 = Color3.fromRGB(200, 200, 200)
-header.Font = Enum.Font.Code
-header.TextSize = 14
+-- Title
+local title = Instance.new("TextLabel", f)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+title.Text = "FLY V4 | CORE"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.CodeBold
+title.TextSize = 14
 
--- Контейнер для кнопок
-local grid = Instance.new("UIGridLayout", f)
-grid.CellSize = UDim2.new(0, 80, 0, 30)
-grid.CellPadding = UDim2.new(0, 5, 0, 5)
-grid.FillDirection = Enum.FillDirection.Horizontal
-grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
-grid.Padding = UDim2.new(0, 5, 0, 5)
-grid.SortOrder = Enum.SortOrder.LayoutOrder
-grid.Position = UDim2.new(0, 5, 0, 40)
+-- Logic Variables
+local fly, vel, gyro = false, nil, nil
+local speed = 1
+local keys = {f=0, b=0, l=0, r=0}
 
--- Функция создания кнопки в стиле 2026
-local function createBtn(name, text)
-    local btn = Instance.new("TextButton", f)
-    btn.Text = text
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.Code
-    btn.BorderSizePixel = 0
-    
-    local s = Instance.new("UIStroke", btn)
-    s.Color = Color3.fromRGB(100, 10, 10)
-    s.Thickness = 1
-    
-    btn.MouseEnter:Connect(function() 
-        ts:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 20, 20)}):Play() 
-    end)
-    btn.MouseLeave:Connect(function() 
-        ts:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play() 
-    end)
-    return btn
+-- Helper: Create Button
+local function createBtn(text, pos)
+    local b = Instance.new("TextButton", f)
+    b.Size = UDim2.new(0, 70, 0, 30)
+    b.Position = pos
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    b.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b.Font = Enum.Font.Code
+    b.BorderSizePixel = 0
+    b.MouseEnter:Connect(function() b.BackgroundColor3 = Color3.fromRGB(150, 20, 20) end)
+    b.MouseLeave:Connect(function() b.BackgroundColor3 = Color3.fromRGB(30, 30, 30) end)
+    return b
 end
 
 local b = {
-    FLY = createBtn("FLY", "FLY"),
-    UP = createBtn("UP", "UP"),
-    DOWN = createBtn("DOWN", "DOWN"),
-    PLUS = createBtn("+", "+"),
-    MINUS = createBtn("-", "-")
+    FLY = createBtn("FLY", UDim2.new(0, 5, 0, 40)),
+    UP = createBtn("UP", UDim2.new(0, 85, 0, 40)),
+    DOWN = createBtn("DOWN", UDim2.new(0, 85, 0, 80)),
+    PLUS = createBtn("+", UDim2.new(0, 5, 0, 80)),
+    MINUS = createBtn("-", UDim2.new(0, 5, 0, 120))
 }
 
 local spd = Instance.new("TextLabel", f)
-spd.Size = UDim2.new(0, 170, 0, 30)
-spd.Position = UDim2.new(0, 5, 0, 180)
-spd.Text = "SPEED: 1x"
+spd.Size = UDim2.new(0, 70, 0, 30)
+spd.Position = UDim2.new(0, 85, 0, 120)
+spd.Text = "1x"
 spd.TextColor3 = Color3.fromRGB(150, 20, 20)
 spd.Font = Enum.Font.CodeBold
 spd.BackgroundTransparency = 1
 
--- Логика (вставь сюда всю свою рабочую логику полёта из предыдущего скрипта)
--- ... [код логики остается прежним] ...
+-- Input
+uis.InputBegan:Connect(function(i, g) if not g then if i.KeyCode == Enum.KeyCode.W then keys.f = 1 elseif i.KeyCode == Enum.KeyCode.S then keys.b = 1 elseif i.KeyCode == Enum.KeyCode.A then keys.l = 1 elseif i.KeyCode == Enum.KeyCode.D then keys.r = 1 end end end)
+uis.InputEnded:Connect(function(i) if i.KeyCode == Enum.KeyCode.W then keys.f = 0 elseif i.KeyCode == Enum.KeyCode.S then keys.b = 0 elseif i.KeyCode == Enum.KeyCode.A then keys.l = 0 elseif i.KeyCode == Enum.KeyCode.D then keys.r = 0 end end)
 
-print("Fly V4 Crimson Edition Loaded.")
+local function setFly(on)
+    fly = on
+    local c = p.Character
+    if not c then return end
+    local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+    local h = c.Humanoid
+    if not torso or not h then return end
+    if fly then
+        vel = Instance.new("BodyVelocity", torso); vel.maxForce = Vector3.new(1e9,1e9,1e9)
+        gyro = Instance.new("BodyGyro", torso); gyro.maxTorque = Vector3.new(1e9,1e9,1e9); gyro.P = 9e4
+        h.PlatformStand = true
+    else
+        if vel then vel:Destroy() end
+        if gyro then gyro:Destroy() end
+        h.PlatformStand = false
+    end
+end
+
+rs.Heartbeat:Connect(function()
+    if not fly or not p.Character then return end
+    local cam = workspace.CurrentCamera
+    local move = Vector3.new(keys.r-keys.l, 0, keys.f-keys.b)
+    if move.Magnitude > 0 then move = move.Unit end
+    local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * speed
+    if vel then vel.Velocity = velVec end
+    if gyro then gyro.CFrame = cam.CFrame end
+end)
+
+b.FLY.MouseButton1Click:Connect(function() setFly(not fly) end)
+b.UP.MouseButton1Down:Connect(function() local con; con = rs.RenderStepped:Connect(function() if p.Character and p.Character.HumanoidRootPart then p.Character.HumanoidRootPart.CFrame *= CFrame.new(0,1,0) end end); b.UP.MouseLeave:Connect(function() con:Disconnect() end) end)
+b.DOWN.MouseButton1Down:Connect(function() local con; con = rs.RenderStepped:Connect(function() if p.Character and p.Character.HumanoidRootPart then p.Character.HumanoidRootPart.CFrame *= CFrame.new(0,-1,0) end end); b.DOWN.MouseLeave:Connect(function() con:Disconnect() end) end)
+b.PLUS.MouseButton1Click:Connect(function() speed = math.min(speed+1, 20); spd.Text = speed.."x" end)
+b.MINUS.MouseButton1Click:Connect(function() speed = math.max(speed-1, 1); spd.Text = speed.."x" end)
+
+print("FLY V4 LOADED — DARK CRIMSON EDITION")
