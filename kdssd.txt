@@ -1,0 +1,657 @@
+-- RAZE SCRIPTS | ULTRA EDITION | 50+ FUNCTIONS | ESP FIXED
+local p = game.Players.LocalPlayer
+local uis = game:GetService("UserInputService")
+local rs = game:GetService("RunService")
+local ws = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local LocalPlayer = p
+
+-- КЛЮЧ
+local CORRECT_KEY = "1337"
+
+-- ============ ВВОД КЛЮЧА ============
+local keyGui = Instance.new("ScreenGui")
+keyGui.Parent = p:WaitForChild("PlayerGui")
+keyGui.ResetOnSpawn = false
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Parent = keyGui
+keyFrame.Size = UDim2.new(0, 350, 0, 200)
+keyFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
+keyFrame.BackgroundColor3 = Color3.fromRGB(20, 15, 35)
+keyFrame.BackgroundTransparency = 0.1
+keyFrame.BorderSizePixel = 0
+keyFrame.Active = true
+keyFrame.Draggable = true
+
+local kc = Instance.new("UICorner", keyFrame)
+kc.CornerRadius = UDim.new(0, 15)
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Parent = keyFrame
+keyTitle.Size = UDim2.new(1, 0, 0, 45)
+keyTitle.BackgroundColor3 = Color3.fromRGB(40, 25, 65)
+keyTitle.Text = "RAZE SCRIPTS | ULTRA"
+keyTitle.TextColor3 = Color3.fromRGB(255, 100, 200)
+keyTitle.TextSize = 18
+keyTitle.Font = Enum.Font.GothamBold
+
+local keyLabel = Instance.new("TextLabel")
+keyLabel.Parent = keyFrame
+keyLabel.Size = UDim2.new(1, -40, 0, 25)
+keyLabel.Position = UDim2.new(0, 20, 0, 60)
+keyLabel.Text = "ВВЕДИТЕ КЛЮЧ:"
+keyLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+keyLabel.TextSize = 14
+keyLabel.Font = Enum.Font.GothamMedium
+keyLabel.BackgroundTransparency = 1
+
+local keyBox = Instance.new("TextBox")
+keyBox.Parent = keyFrame
+keyBox.Size = UDim2.new(1, -80, 0, 40)
+keyBox.Position = UDim2.new(0, 40, 0, 90)
+keyBox.PlaceholderText = "КЛЮЧ"
+keyBox.Text = ""
+keyBox.TextColor3 = Color3.new(1,1,1)
+keyBox.BackgroundColor3 = Color3.fromRGB(30, 25, 50)
+keyBox.Font = Enum.Font.GothamBold
+keyBox.TextSize = 16
+
+local kbCorner = Instance.new("UICorner", keyBox)
+kbCorner.CornerRadius = UDim.new(0, 10)
+
+local submitBtn = Instance.new("TextButton")
+submitBtn.Parent = keyFrame
+submitBtn.Size = UDim2.new(0, 140, 0, 40)
+submitBtn.Position = UDim2.new(0.5, -70, 0, 145)
+submitBtn.Text = "АКТИВИРОВАТЬ"
+submitBtn.TextColor3 = Color3.new(1,1,1)
+submitBtn.TextSize = 15
+submitBtn.Font = Enum.Font.GothamBold
+submitBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
+
+local subCorner = Instance.new("UICorner", submitBtn)
+subCorner.CornerRadius = UDim.new(0, 20)
+
+submitBtn.MouseButton1Click:Connect(function()
+    if keyBox.Text == CORRECT_KEY then
+        keyGui:Destroy()
+        LoadMain()
+    else
+        keyBox.Text = ""
+        keyBox.PlaceholderText = "❌ НЕВЕРНЫЙ КЛЮЧ!"
+        wait(1.5)
+        keyBox.PlaceholderText = "КЛЮЧ"
+    end
+end)
+
+-- ============ ГЛАВНОЕ МЕНЮ ============
+function LoadMain()
+    local main = Instance.new("ScreenGui")
+    main.Parent = p:WaitForChild("PlayerGui")
+    main.ResetOnSpawn = false
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Parent = main
+    mainFrame.Size = UDim2.new(0, 580, 0, 600)
+    mainFrame.Position = UDim2.new(0.5, -290, 0.5, -300)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(10, 8, 20)
+    mainFrame.BackgroundTransparency = 0.05
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    
+    local mCorner = Instance.new("UICorner", mainFrame)
+    mCorner.CornerRadius = UDim.new(0, 20)
+    
+    -- Обводка
+    local stroke = Instance.new("UIStroke", mainFrame)
+    stroke.Color = Color3.fromRGB(255, 100, 200)
+    stroke.Thickness = 1.5
+    stroke.Transparency = 0.4
+    
+    -- ЗАГОЛОВОК
+    local titleBar = Instance.new("Frame")
+    titleBar.Parent = mainFrame
+    titleBar.Size = UDim2.new(1, 0, 0, 50)
+    titleBar.BackgroundColor3 = Color3.fromRGB(30, 20, 55)
+    titleBar.BorderSizePixel = 0
+    
+    local tCorner = Instance.new("UICorner", titleBar)
+    tCorner.CornerRadius = UDim.new(0, 20)
+    
+    local titleText = Instance.new("TextLabel")
+    titleText.Parent = titleBar
+    titleText.Size = UDim2.new(1, -130, 1, 0)
+    titleText.Position = UDim2.new(0, 15, 0, 0)
+    titleText.Text = "⚡ RAZE SCRIPTS | ULTRA ⚡"
+    titleText.TextColor3 = Color3.fromRGB(255, 100, 200)
+    titleText.TextSize = 17
+    titleText.Font = Enum.Font.GothamBold
+    titleText.TextXAlignment = Enum.TextXAlignment.Left
+    titleText.BackgroundTransparency = 1
+    
+    -- КНОПКИ ЗАГОЛОВКА
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Parent = titleBar
+    minimizeBtn.Size = UDim2.new(0, 35, 0, 35)
+    minimizeBtn.Position = UDim2.new(1, -85, 0, 8)
+    minimizeBtn.Text = "−"
+    minimizeBtn.TextSize = 28
+    minimizeBtn.TextColor3 = Color3.new(1,1,1)
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 110)
+    local minc = Instance.new("UICorner", minimizeBtn)
+    minc.CornerRadius = UDim.new(0, 10)
+    
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Parent = titleBar
+    closeBtn.Size = UDim2.new(0, 35, 0, 35)
+    closeBtn.Position = UDim2.new(1, -40, 0, 8)
+    closeBtn.Text = "✕"
+    closeBtn.TextSize = 20
+    closeBtn.TextColor3 = Color3.new(1,1,1)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 110)
+    local cc = Instance.new("UICorner", closeBtn)
+    cc.CornerRadius = UDim.new(0, 10)
+    closeBtn.MouseButton1Click:Connect(function() main:Destroy() end)
+    
+    -- СВОРАЧИВАНИЕ
+    local minimized = false
+    local origSize = mainFrame.Size
+    local origPos = mainFrame.Position
+    minimizeBtn.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            mainFrame.Size = UDim2.new(0, 200, 0, 50)
+            mainFrame.Position = UDim2.new(1, -220, 0, 50)
+            for _, btn in pairs(tabBtns) do if btn then btn.Visible = false end end
+            minimizeBtn.Text = "□"
+        else
+            mainFrame.Size = origSize
+            mainFrame.Position = origPos
+            for _, btn in pairs(tabBtns) do if btn then btn.Visible = true end end
+            minimizeBtn.Text = "−"
+        end
+    end)
+    
+    -- СОЗДАНИЕ КНОПОК ВКЛАДОК
+    local tabNames = {"🔥FLY", "🏃SPEED", "👤PLAYER", "👁VISUAL", "👁ESP", "🎮MISC", "ℹINFO"}
+    local tabIds = {"fly", "speed", "player", "visual", "esp", "misc", "info"}
+    local tabBtns = {}
+    local containers = {}
+    
+    for i, name in ipairs(tabNames) do
+        local btn = Instance.new("TextButton")
+        btn.Parent = mainFrame
+        btn.Size = UDim2.new(0, 80, 0, 35)
+        btn.Position = UDim2.new(0, 10 + (i-1)*82, 0, 55)
+        btn.Text = name
+        btn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        btn.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
+        btn.BackgroundTransparency = 0.5
+        btn.BorderSizePixel = 0
+        local bc = Instance.new("UICorner", btn)
+        bc.CornerRadius = UDim.new(0, 10)
+        tabBtns[tabIds[i]] = btn
+        
+        local cont = Instance.new("Frame")
+        cont.Parent = mainFrame
+        cont.Size = UDim2.new(1, -30, 1, -120)
+        cont.Position = UDim2.new(0, 15, 0, 100)
+        cont.BackgroundTransparency = 1
+        cont.Visible = (i == 1)
+        containers[tabIds[i]] = cont
+    end
+    
+    -- ФУНКЦИИ ДЛЯ СОЗДАНИЯ ЭЛЕМЕНТОВ
+    function MakeBtn(parent, text, y, color, callback)
+        local btn = Instance.new("TextButton")
+        btn.Parent = parent
+        btn.Size = UDim2.new(0, 240, 0, 38)
+        btn.Position = UDim2.new(0.5, -120, 0, y)
+        btn.Text = text
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.TextSize = 13
+        btn.Font = Enum.Font.GothamSemibold
+        btn.BackgroundColor3 = color or Color3.fromRGB(200, 50, 150)
+        btn.BorderSizePixel = 0
+        local bc = Instance.new("UICorner", btn)
+        bc.CornerRadius = UDim.new(0, 12)
+        btn.MouseButton1Click:Connect(callback)
+        return btn
+    end
+    
+    function MakeSmallBtn(parent, text, x, y, color, callback)
+        local btn = Instance.new("TextButton")
+        btn.Parent = parent
+        btn.Size = UDim2.new(0, 100, 0, 32)
+        btn.Position = UDim2.new(x, 0, y, 0)
+        btn.Text = text
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.TextSize = 12
+        btn.Font = Enum.Font.GothamSemibold
+        btn.BackgroundColor3 = color or Color3.fromRGB(70, 45, 110)
+        btn.BorderSizePixel = 0
+        local bc = Instance.new("UICorner", btn)
+        bc.CornerRadius = UDim.new(0, 10)
+        btn.MouseButton1Click:Connect(callback)
+        return btn
+    end
+    
+    function MakeVal(parent, text, y, color)
+        local val = Instance.new("TextLabel")
+        val.Parent = parent
+        val.Size = UDim2.new(0, 120, 0, 40)
+        val.Position = UDim2.new(0.5, -60, 0, y)
+        val.Text = text
+        val.TextColor3 = color or Color3.fromRGB(255, 100, 200)
+        val.TextSize = 24
+        val.Font = Enum.Font.GothamBold
+        val.BackgroundTransparency = 1
+        return val
+    end
+    
+    -- ============ ВКЛАДКА 1: FLY ============
+    local flyCont = containers["fly"]
+    local flying = false
+    local vel, gyro
+    local flySpd = 1
+    local flyKeys = {w=0,s=0,a=0,d=0}
+    
+    MakeBtn(flyCont, "🛸 АКТИВИРОВАТЬ ПОЛЁТ", 10, Color3.fromRGB(200, 50, 150), function()
+        flying = not flying
+        local c = p.Character
+        if not c then return end
+        local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+        local h = c:FindFirstChild("Humanoid")
+        if not torso or not h then return end
+        if flying then
+            vel = Instance.new("BodyVelocity", torso)
+            vel.maxForce = Vector3.new(9e9, 9e9, 9e9)
+            vel.Velocity = Vector3.new(0, 0.1, 0)
+            gyro = Instance.new("BodyGyro", torso)
+            gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+            gyro.P = 9e4
+            h.PlatformStand = true
+        else
+            if vel then vel:Destroy() end
+            if gyro then gyro:Destroy() end
+            h.PlatformStand = false
+        end
+    end)
+    
+    local upB = MakeSmallBtn(flyCont, "▲ ВВЕРХ", 0.25, 65, Color3.fromRGB(0, 150, 200), nil)
+    local downB = MakeSmallBtn(flyCont, "▼ ВНИЗ", 0.6, 65, Color3.fromRGB(0, 150, 200), nil)
+    
+    local upCon, downCon
+    upB.MouseButton1Down:Connect(function()
+        upCon = rs.RenderStepped:Connect(function()
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, 2.5, 0)
+            end
+        end)
+    end)
+    upB.MouseLeave:Connect(function() if upCon then upCon:Disconnect() end end)
+    
+    downB.MouseButton1Down:Connect(function()
+        downCon = rs.RenderStepped:Connect(function()
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, -2.5, 0)
+            end
+        end)
+    end)
+    downB.MouseLeave:Connect(function() if downCon then downCon:Disconnect() end end)
+    
+    local flySpdVal = MakeVal(flyCont, flySpd.."x", 120)
+    MakeSmallBtn(flyCont, "-", 0.3, 120, Color3.fromRGB(200, 50, 100), function()
+        flySpd = math.max(flySpd - 1, 1)
+        flySpdVal.Text = flySpd.."x"
+    end)
+    MakeSmallBtn(flyCont, "+", 0.6, 120, Color3.fromRGB(0, 180, 100), function()
+        flySpd = math.min(flySpd + 1, 20)
+        flySpdVal.Text = flySpd.."x"
+    end)
+    
+    MakeBtn(flyCont, "🛸 НЛО РЕЖИМ", 175, Color3.fromRGB(150, 50, 200), function()
+        local ufo = not _G.ufoMode
+        _G.ufoMode = ufo
+        if ufo then ws.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+        else ws.CurrentCamera.CameraType = Enum.CameraType.Custom end
+    end)
+    
+    MakeBtn(flyCont, "🌀 ТОРНАДО (кружение)", 225, Color3.fromRGB(100, 100, 200), function()
+        local tornado = Instance.new("Part")
+        tornado.Size = Vector3.new(10, 1, 10)
+        tornado.Position = p.Character.HumanoidRootPart.Position
+        tornado.Anchored = true
+        tornado.CanCollide = false
+        tornado.Transparency = 0.5
+        tornado.BrickColor = BrickColor.new("Bright blue")
+        tornado.Parent = ws
+        local bodyVel = Instance.new("BodyVelocity", tornado)
+        bodyVel.Velocity = Vector3.new(0, 5, 0)
+        wait(3)
+        tornado:Destroy()
+    end)
+    
+    -- WASD управление для полёта
+    uis.InputBegan:Connect(function(i)
+        local k = i.KeyCode
+        if k == Enum.KeyCode.W then flyKeys.w = 1
+        elseif k == Enum.KeyCode.S then flyKeys.s = 1
+        elseif k == Enum.KeyCode.A then flyKeys.a = 1
+        elseif k == Enum.KeyCode.D then flyKeys.d = 1
+        end
+    end)
+    uis.InputEnded:Connect(function(i)
+        local k = i.KeyCode
+        if k == Enum.KeyCode.W then flyKeys.w = 0
+        elseif k == Enum.KeyCode.S then flyKeys.s = 0
+        elseif k == Enum.KeyCode.A then flyKeys.a = 0
+        elseif k == Enum.KeyCode.D then flyKeys.d = 0
+        end
+    end)
+    
+    rs.Heartbeat:Connect(function()
+        if not flying then return end
+        local c = p.Character
+        if not c then return end
+        local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+        if not torso then return end
+        local cam = ws.CurrentCamera
+        local move = Vector3.new(flyKeys.d - flyKeys.a, 0, flyKeys.w - flyKeys.s)
+        if move.Magnitude > 0 then move = move.Unit end
+        local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * flySpd
+        if vel then vel.Velocity = velVec end
+        if gyro then gyro.CFrame = cam.CFrame end
+        if _G.ufoMode then cam.CFrame = torso.CFrame + torso.CFrame.LookVector * 5 end
+    end)
+    
+    -- ============ ВКЛАДКА 2: SPEED ============
+    local speedCont = containers["speed"]
+    local walkSpd = 16
+    local jumpPow = 50
+    
+    local walkVal = MakeVal(speedCont, "🏃 "..walkSpd, 15)
+    MakeSmallBtn(speedCont, "-5", 0.25, 25, Color3.fromRGB(200, 50, 100), function()
+        walkSpd = math.max(walkSpd - 5, 0)
+        walkVal.Text = "🏃 "..walkSpd
+        if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.WalkSpeed = walkSpd end
+    end)
+    MakeSmallBtn(speedCont, "+5", 0.6, 25, Color3.fromRGB(0, 180, 100), function()
+        walkSpd = math.min(walkSpd + 5, 250)
+        walkVal.Text = "🏃 "..walkSpd
+        if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.WalkSpeed = walkSpd end
+    end)
+    
+    local jumpVal = MakeVal(speedCont, "🦘 "..jumpPow, 85)
+    MakeSmallBtn(speedCont, "-10", 0.25, 95, Color3.fromRGB(200, 50, 100), function()
+        jumpPow = math.max(jumpPow - 10, 0)
+        jumpVal.Text = "🦘 "..jumpPow
+        if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.JumpPower = jumpPow end
+    end)
+    MakeSmallBtn(speedCont, "+10", 0.6, 95, Color3.fromRGB(0, 180, 100), function()
+        jumpPow = math.min(jumpPow + 10, 500)
+        jumpVal.Text = "🦘 "..jumpPow
+        if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.JumpPower = jumpPow end
+    end)
+    
+    MakeBtn(speedCont, "🔄 СБРОС (16 | 50)", 155, Color3.fromRGB(180, 80, 50), function()
+        walkSpd = 16
+        jumpPow = 50
+        walkVal.Text = "🏃 16"
+        jumpVal.Text = "🦘 50"
+        if p.Character and p.Character:FindFirstChild("Humanoid") then
+            p.Character.Humanoid.WalkSpeed = 16
+            p.Character.Humanoid.JumpPower = 50
+        end
+    end)
+    
+    MakeBtn(speedCont, "♾ БЕЗГРАНИЧНАЯ ЭНЕРГИЯ", 210, Color3.fromRGB(100, 100, 200), function()
+        p.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+        p.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+    end)
+    
+    -- ============ ВКЛАДКА 3: PLAYER ============
+    local playerCont = containers["player"]
+    
+    local godMode = false
+    MakeBtn(playerCont, "🛡 БЕССМЕРТИЕ", 10, Color3.fromRGB(100, 100, 200), function()
+        godMode = not godMode
+        if godMode then
+            p.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                if p.Character.Humanoid.Health < 100 then p.Character.Humanoid.Health = 100 end
+            end)
+        end
+    end)
+    
+    local invisible = false
+    MakeBtn(playerCont, "👻 НЕВИДИМОСТЬ", 60, Color3.fromRGB(150, 50, 200), function()
+        invisible = not invisible
+        p.Character.Humanoid.Transparency = invisible and 1 or 0
+        for _, v in pairs(p.Character:GetChildren()) do
+            if v:IsA("BasePart") then v.Transparency = invisible and 1 or 0 end
+        end
+    end)
+    
+    MakeBtn(playerCont, "🥚 СПАВН ЯИЦ (20 шт)", 110, Color3.fromRGB(200, 150, 50), function()
+        for i = 1, 20 do
+            local egg = Instance.new("Part")
+            egg.Size = Vector3.new(1,1,1)
+            egg.Shape = Enum.PartType.Ball
+            egg.BrickColor = BrickColor.random()
+            egg.Position = p.Character.HumanoidRootPart.Position + Vector3.new(math.random(-25,25), 20, math.random(-25,25))
+            egg.Parent = ws
+        end
+    end)
+    
+    MakeBtn(playerCont, "🧹 ОЧИСТИТЬ МУСОР", 160, Color3.fromRGB(100, 150, 200), function()
+        for _, v in pairs(ws:GetChildren()) do
+            if v:IsA("Part") and v.Name ~= "Baseplate" and not v:IsDescendantOf(p.Character) then
+                v:Destroy()
+            end
+        end
+    end)
+    
+    MakeBtn(playerCont, "🤗 ТЕЛЕПОРТ К ИГРОКУ", 210, Color3.fromRGB(255, 100, 100), function()
+        local nearest, dist = nil, math.huge
+        for _, pl in pairs(Players:GetPlayers()) do
+            if pl ~= p and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
+                local d = (pl.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                if d < dist then dist, nearest = d, pl end
+            end
+        end
+        if nearest then
+            p.Character.HumanoidRootPart.CFrame = nearest.Character.HumanoidRootPart.CFrame
+        end
+    end)
+    
+    -- ============ ВКЛАДКА 4: VISUAL ============
+    local visualCont = containers["visual"]
+    
+    local kefir = nil
+    MakeBtn(visualCont, "🥛 КЕФИР НА ГОЛОВЕ", 10, Color3.fromRGB(200, 200, 100), function()
+        if kefir and kefir.Parent then kefir:Destroy() else
+            kefir = Instance.new("Part")
+            kefir.Size = Vector3.new(1.2, 0.8, 1.2)
+            kefir.Shape = Enum.PartType.Cylinder
+            kefir.BrickColor = BrickColor.White()
+            kefir.Parent = p.Character.Head
+            local w = Instance.new("Weld", kefir)
+            w.Part0 = p.Character.Head
+            w.Part1 = kefir
+            w.C0 = CFrame.new(0, 0.5, 0)
+        end
+    end)
+    
+    MakeBtn(visualCont, "⚔ ШИПЫ НА СПИНЕ", 60, Color3.fromRGB(150, 100, 200), function()
+        local torso = p.Character.UpperTorso or p.Character.Torso
+        for i = 1, 5 do
+            local spike = Instance.new("Part")
+            spike.Size = Vector3.new(0.5, 2, 0.5)
+            spike.BrickColor = BrickColor.Gray()
+            spike.Parent = torso
+            local w = Instance.new("Weld", spike)
+            w.Part0 = torso
+            w.Part1 = spike
+            w.C0 = CFrame.new(0, 0, 1) * CFrame.Angles(0, math.rad(72*i), 0)
+        end
+    end)
+    
+    local light = nil
+    MakeBtn(visualCont, "🔦 ФОНАРИК", 110, Color3.fromRGB(255, 200, 50), function()
+        if light and light.Parent then light:Destroy() else
+            light = Instance.new("PointLight")
+            light.Parent = p.Character.Head
+            light.Range = 35
+            light.Brightness = 5
+            light.Color = Color3.fromRGB(255, 255, 200)
+        end
+    end)
+    
+    local firePart = nil
+    MakeBtn(visualCont, "🔥 ОГНЕННЫЕ ЧАСТИЦЫ", 160, Color3.fromRGB(255, 80, 50), function()
+        if firePart and firePart.Parent then firePart:Destroy() else
+            firePart = Instance.new("ParticleEmitter")
+            firePart.Parent = p.Character.HumanoidRootPart
+            firePart.Texture = "rbxasset://textures/particles/flame_main.dds"
+            firePart.Rate = 80
+            firePart.Lifetime = NumberRange.new(0.5)
+            firePart.SpreadAngle = Vector2.new(360, 360)
+        end
+    end)
+    
+    local trails = {}
+    MakeBtn(visualCont, "👣 СЛЕДЫ ЗА НОГАМИ", 210, Color3.fromRGB(100, 200, 200), function()
+        for _, v in pairs(p.Character:GetChildren()) do
+            if v:IsA("BasePart") and not v:FindFirstChild("Trail") then
+                local t = Instance.new("Trail", v)
+                t.Color = ColorSequence.new(Color3.fromRGB(255, 100, 200))
+                t.Lifetime = 0.5
+                table.insert(trails, t)
+            end
+        end
+    end)
+    
+    -- ============ ВКЛАДКА 5: ESP (РАБОЧИЙ!) ============
+    local espCont = containers["esp"]
+    
+    -- ESP функции из твоего кода
+    local function createHighlight(plr)
+        if plr.Character and not plr.Character:FindFirstChild("ESPHighlight") then
+            local highlight = Instance.new("Highlight")
+            highlight.Name = "ESPHighlight"
+            highlight.FillColor = Color3.fromRGB(255, 0, 0)
+            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+            highlight.FillTransparency = 0.6
+            highlight.OutlineTransparency = 0
+            highlight.Adornee = plr.Character
+            highlight.Parent = plr.Character
+        end
+    end
+    
+    local function createNameTag(plr)
+        if plr.Character and plr.Character:FindFirstChild("Head") and not plr.Character.Head:FindFirstChild("NameTag") then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "NameTag"
+            billboard.Adornee = plr.Character.Head
+            billboard.Size = UDim2.new(0, 130, 0, 25)
+            billboard.StudsOffset = Vector3.new(0, 2, 0)
+            billboard.AlwaysOnTop = true
+            billboard.Parent = plr.Character.Head
+            
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Name = "TagLabel"
+            textLabel.Size = UDim2.new(1, 1, 1, 1)
+            textLabel.BackgroundTransparency = 1
+            textLabel.TextColor3 = Color3.new(1, 1, 1)
+            textLabel.Font = Enum.Font.Cartoon
+            textLabel.TextScaled = true
+            textLabel.TextStrokeTransparency = 0.6
+            textLabel.Parent = billboard
+        end
+    end
+    
+    local function updateNameTag(plr)
+        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("NameTag") and plr.Character:FindFirstChild("Humanoid") then
+            local tag = plr.Character.Head.NameTag.TagLabel
+            local distance = (p.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+            local health = math.floor(plr.Character.Humanoid.Health)
+            tag.Text = plr.Name .. " | " .. string.format("%.0f", distance) .. "m | ❤️" .. health
+        end
+    end
+    
+    local function updateHighlightColor(plr)
+        if plr.Character and plr.Character:FindFirstChild("ESPHighlight") and plr.Character:FindFirstChild("Humanoid") then
+            if plr.Character.Humanoid.Health <= 0 then
+                plr.Character.ESPHighlight.FillColor = Color3.fromRGB(120, 0, 0)
+            else
+                plr.Character.ESPHighlight.FillColor = Color3.fromRGB(255, 0, 0)
+            end
+        end
+    end
+    
+    local function setupESP(plr)
+        if plr ~= p then
+            plr.CharacterAdded:Connect(function()
+                wait(0.1)
+                createHighlight(plr)
+                createNameTag(plr)
+            end)
+            if plr.Character then
+                createHighlight(plr)
+                createNameTag(plr)
+            end
+        end
+    end
+    
+    -- Включение/выключение ESP
+    local espEnabled = false
+    local espConnection = nil
+    
+    MakeBtn(espCont, "🔲 ВКЛЮЧИТЬ ESP", 10, Color3.fromRGB(100, 200, 100), function()
+        if espEnabled then
+            for _, pl in pairs(Players:GetPlayers()) do
+                if pl.Character and pl.Character:FindFirstChild("ESPHighlight") then
+                    pl.Character.ESPHighlight:Destroy()
+                end
+                if pl.Character and pl.Character.Head and pl.Character.Head:FindFirstChild("NameTag") then
+                    pl.Character.Head.NameTag:Destroy()
+                end
+            end
+            if espConnection then espConnection:Disconnect() end
+            espEnabled = false
+        else
+            for _, pl in pairs(Players:GetPlayers()) do setupESP(pl) end
+            Players.PlayerAdded:Connect(setupESP)
+            espConnection = rs.RenderStepped:Connect(function()
+                for _, pl in pairs(Players:GetPlayers()) do
+                    if pl ~= p then
+                        updateNameTag(pl)
+                        updateHighlightColor(pl)
+                    end
+                end
+            end)
+            espEnabled = true
+        end
+    end)
+    
+    MakeBtn(espCont, "🎯 ESP ОРУЖИЯ", 70, Color3.fromRGB(150, 150, 255), function()
+        for _, v in pairs(ws:GetDescendants()) do
+            if v:IsA("Tool") and v.Parent ~= p.Character then
+                local box = Instance.new("BoxHandleAdornment")
+                box.Parent = v
+                box.Size = Vector3.new(2, 1, 1)
+                box.Color3 = Color3.fromRGB(255, 255, 100)
+                box.AlwaysOnTop = true
+            end
+        end
+    end)
+    
+    MakeBtn(espCont, "📏 ЛИНИИ ДО ИГРОКОВ", 130, Color3.fromRGB(100, 200, 255), function()
+        for _, pl in pairs(Players:GetPlayers()) do
+            if pl ~= p and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
+                local line = Instance.new("SelectionPartLasso")
+                line.Parent = pl.Character.HumanoidRootPart
+                line.Humanoid = p.Character.Humanoid
+                line.Color3 = Color3.fromRGB(255
