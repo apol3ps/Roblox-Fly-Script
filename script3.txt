@@ -1,4 +1,4 @@
--- RAZE SCRIPTS | KEY SYSTEM + FLY GUI 2026
+-- RAZE SCRIPTS | KEY SYSTEM + FLY GUI + SPEED CONTROLLER 2026
 local p = game.Players.LocalPlayer
 local ts = game:GetService("TweenService")
 local uis = game:GetService("UserInputService")
@@ -124,8 +124,8 @@ function LoadMainGUI()
     local bgGradient = Instance.new("Frame")
     bgGradient.Name = "BackgroundGlow"
     bgGradient.Parent = main
-    bgGradient.Size = UDim2.new(0, 420, 0, 520)
-    bgGradient.Position = UDim2.new(0.5, -210, 0.5, -260)
+    bgGradient.Size = UDim2.new(0, 500, 0, 600)
+    bgGradient.Position = UDim2.new(0.5, -250, 0.5, -300)
     bgGradient.BackgroundColor3 = Color3.fromRGB(10, 5, 20)
     bgGradient.BorderSizePixel = 0
     bgGradient.Active = true
@@ -160,7 +160,7 @@ function LoadMainGUI()
     titleText.Font = Enum.Font.GothamBold
     titleText.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- КНОПКИ ЗАГОЛОВКА (ИСПРАВЛЕНЫ)
+    -- КНОПКИ ЗАГОЛОВКА
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Parent = titleBar
     minimizeBtn.Size = UDim2.new(0, 35, 0, 35)
@@ -205,14 +205,14 @@ function LoadMainGUI()
         main:Destroy()
     end)
 
-    -- ПАНЕЛЬ ВКЛАДОК
+    -- ПАНЕЛЬ ВКЛАДОК (3 вкладки)
     local flyTab = Instance.new("TextButton")
     flyTab.Parent = bgGradient
-    flyTab.Size = UDim2.new(0, 120, 0, 40)
-    flyTab.Position = UDim2.new(0, 25, 0, 60)
+    flyTab.Size = UDim2.new(0, 100, 0, 40)
+    flyTab.Position = UDim2.new(0, 20, 0, 60)
     flyTab.Text = "🔥 FLY"
     flyTab.TextColor3 = Color3.fromRGB(255, 120, 220)
-    flyTab.TextSize = 15
+    flyTab.TextSize = 14
     flyTab.Font = Enum.Font.GothamBold
     flyTab.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
     flyTab.BorderSizePixel = 0
@@ -220,13 +220,28 @@ function LoadMainGUI()
     local flyTabCorner = Instance.new("UICorner", flyTab)
     flyTabCorner.CornerRadius = UDim.new(0, 12)
 
+    local speedTab = Instance.new("TextButton")
+    speedTab.Parent = bgGradient
+    speedTab.Size = UDim2.new(0, 100, 0, 40)
+    speedTab.Position = UDim2.new(0, 130, 0, 60)
+    speedTab.Text = "🏃 SPEED"
+    speedTab.TextColor3 = Color3.fromRGB(180, 180, 200)
+    speedTab.TextSize = 14
+    speedTab.Font = Enum.Font.GothamMedium
+    speedTab.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
+    speedTab.BackgroundTransparency = 0.5
+    speedTab.BorderSizePixel = 0
+
+    local speedTabCorner = Instance.new("UICorner", speedTab)
+    speedTabCorner.CornerRadius = UDim.new(0, 12)
+
     local settingsTab = Instance.new("TextButton")
     settingsTab.Parent = bgGradient
-    settingsTab.Size = UDim2.new(0, 120, 0, 40)
-    settingsTab.Position = UDim2.new(0, 155, 0, 60)
+    settingsTab.Size = UDim2.new(0, 100, 0, 40)
+    settingsTab.Position = UDim2.new(0, 240, 0, 60)
     settingsTab.Text = "⚙ SETTINGS"
     settingsTab.TextColor3 = Color3.fromRGB(180, 180, 200)
-    settingsTab.TextSize = 15
+    settingsTab.TextSize = 14
     settingsTab.Font = Enum.Font.GothamMedium
     settingsTab.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
     settingsTab.BackgroundTransparency = 0.5
@@ -242,6 +257,13 @@ function LoadMainGUI()
     flyContainer.Position = UDim2.new(0, 25, 0, 110)
     flyContainer.BackgroundTransparency = 1
 
+    local speedContainer = Instance.new("Frame")
+    speedContainer.Parent = bgGradient
+    speedContainer.Size = UDim2.new(1, -50, 1, -150)
+    speedContainer.Position = UDim2.new(0, 25, 0, 110)
+    speedContainer.BackgroundTransparency = 1
+    speedContainer.Visible = false
+
     local settingsContainer = Instance.new("Frame")
     settingsContainer.Parent = bgGradient
     settingsContainer.Size = UDim2.new(1, -50, 1, -150)
@@ -249,7 +271,7 @@ function LoadMainGUI()
     settingsContainer.BackgroundTransparency = 1
     settingsContainer.Visible = false
 
-    -- ============ FLY TAB ============
+    -- ============ FLY TAB (без изменений) ============
     local flyState = false
     local vel, gyro
     local flySpeed = 1
@@ -269,6 +291,15 @@ function LoadMainGUI()
     local activeCorner = Instance.new("UICorner", activeFlyBtn)
     activeCorner.CornerRadius = UDim.new(0, 28)
 
+    activeFlyBtn.MouseEnter:Connect(function()
+        ts:Create(activeFlyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 180)}):Play()
+    end)
+    activeFlyBtn.MouseLeave:Connect(function()
+        if not flyState then
+            ts:Create(activeFlyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 60, 160)}):Play()
+        end
+    end)
+
     local upBtn = Instance.new("TextButton")
     upBtn.Parent = flyContainer
     upBtn.Size = UDim2.new(0, 120, 0, 50)
@@ -282,6 +313,13 @@ function LoadMainGUI()
 
     local upCorner = Instance.new("UICorner", upBtn)
     upCorner.CornerRadius = UDim.new(0, 18)
+
+    upBtn.MouseEnter:Connect(function()
+        ts:Create(upBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 200, 250)}):Play()
+    end)
+    upBtn.MouseLeave:Connect(function()
+        ts:Create(upBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 170, 220)}):Play()
+    end)
 
     local downBtn = Instance.new("TextButton")
     downBtn.Parent = flyContainer
@@ -297,334 +335,315 @@ function LoadMainGUI()
     local downCorner = Instance.new("UICorner", downBtn)
     downCorner.CornerRadius = UDim.new(0, 18)
 
-    -- ПАНЕЛЬ СКОРОСТИ
-    local speedFrame = Instance.new("Frame")
-    speedFrame.Parent = flyContainer
-    speedFrame.Size = UDim2.new(0, 300, 0, 65)
-    speedFrame.Position = UDim2.new(0.5, -150, 0, 155)
-    speedFrame.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
-    speedFrame.BorderSizePixel = 0
-
-    local speedFrameCorner = Instance.new("UICorner", speedFrame)
-    speedFrameCorner.CornerRadius = UDim.new(0, 16)
-
-    local speedLabel = Instance.new("TextLabel")
-    speedLabel.Parent = speedFrame
-    speedLabel.Size = UDim2.new(1, -140, 1, 0)
-    speedLabel.Position = UDim2.new(0, 15, 0, 0)
-    speedLabel.Text = "СКОРОСТЬ ПОЛЁТА"
-    speedLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
-    speedLabel.TextSize = 13
-    speedLabel.Font = Enum.Font.GothamMedium
-    speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-    speedLabel.BackgroundTransparency = 1
-
-    local speedValue = Instance.new("TextLabel")
-    speedValue.Parent = speedFrame
-    speedValue.Size = UDim2.new(0, 80, 1, 0)
-    speedValue.Position = UDim2.new(0, 15, 0, 25)
-    speedValue.Text = "1x"
-    speedValue.TextColor3 = Color3.fromRGB(255, 120, 220)
-    speedValue.TextSize = 28
-    speedValue.Font = Enum.Font.GothamBlack
-    speedValue.TextXAlignment = Enum.TextXAlignment.Left
-    speedValue.BackgroundTransparency = 1
-
-    local minusBtn = Instance.new("TextButton")
-    minusBtn.Parent = speedFrame
-    minusBtn.Size = UDim2.new(0, 55, 0, 45)
-    minusBtn.Position = UDim2.new(1, -125, 0, 10)
-    minusBtn.Text = "−"
-    minusBtn.TextSize = 32
-    minusBtn.TextColor3 = Color3.new(1,1,1)
-    minusBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
-    minusBtn.BorderSizePixel = 0
-
-    local minusCorner = Instance.new("UICorner", minusBtn)
-    minusCorner.CornerRadius = UDim.new(0, 12)
-
-    local plusBtn = Instance.new("TextButton")
-    plusBtn.Parent = speedFrame
-    plusBtn.Size = UDim2.new(0, 55, 0, 45)
-    plusBtn.Position = UDim2.new(1, -60, 0, 10)
-    plusBtn.Text = "+"
-    plusBtn.TextSize = 32
-    plusBtn.TextColor3 = Color3.new(1,1,1)
-    plusBtn.BackgroundColor3 = Color3.fromRGB(0, 190, 110)
-    plusBtn.BorderSizePixel = 0
-
-    local plusCorner = Instance.new("UICorner", plusBtn)
-    plusCorner.CornerRadius = UDim.new(0, 12)
-
-    -- ============ SETTINGS TAB ============
-    local infoTitle = Instance.new("TextLabel")
-    infoTitle.Parent = settingsContainer
-    infoTitle.Size = UDim2.new(1, 0, 0, 35)
-    infoTitle.Position = UDim2.new(0, 0, 0, 5)
-    infoTitle.Text = "📌 ИНФОРМАЦИЯ"
-    infoTitle.TextColor3 = Color3.fromRGB(255, 120, 220)
-    infoTitle.TextSize = 18
-    infoTitle.Font = Enum.Font.GothamBold
-    infoTitle.BackgroundTransparency = 1
-
-    local userFrame = Instance.new("Frame")
-    userFrame.Parent = settingsContainer
-    userFrame.Size = UDim2.new(1, 0, 0, 55)
-    userFrame.Position = UDim2.new(0, 0, 0, 50)
-    userFrame.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
-    userFrame.BorderSizePixel = 0
-
-    local userCorner = Instance.new("UICorner", userFrame)
-    userCorner.CornerRadius = UDim.new(0, 14)
-
-    local userText = Instance.new("TextLabel")
-    userText.Parent = userFrame
-    userText.Size = UDim2.new(1, -100, 1, 0)
-    userText.Position = UDim2.new(0, 15, 0, 0)
-    userText.Text = "👤 " .. p.Name
-    userText.TextColor3 = Color3.new(1,1,1)
-    userText.TextSize = 18
-    userText.Font = Enum.Font.GothamBold
-    userText.TextXAlignment = Enum.TextXAlignment.Left
-    userText.BackgroundTransparency = 1
-
-    local copyButton = Instance.new("TextButton")
-    copyButton.Parent = userFrame
-    copyButton.Size = UDim2.new(0, 55, 0, 38)
-    copyButton.Position = UDim2.new(1, -70, 0, 9)
-    copyButton.Text = "📋"
-    copyButton.TextSize = 18
-    copyButton.TextColor3 = Color3.new(1,1,1)
-    copyButton.BackgroundColor3 = Color3.fromRGB(60, 35, 90)
-    copyButton.BorderSizePixel = 0
-
-    local copyCorner = Instance.new("UICorner", copyButton)
-    copyCorner.CornerRadius = UDim.new(0, 10)
-
-    copyButton.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(p.Name)
-        elseif toclipboard then
-            toclipboard(p.Name)
-        end
-        userText.TextColor3 = Color3.fromRGB(100, 255, 100)
-        task.wait(0.5)
-        userText.TextColor3 = Color3.new(1,1,1)
-    end)
-
-    -- ИНФО ПАНЕЛЬ
-    local infoPanel = Instance.new("Frame")
-    infoPanel.Parent = settingsContainer
-    infoPanel.Size = UDim2.new(1, 0, 0, 150)
-    infoPanel.Position = UDim2.new(0, 0, 0, 120)
-    infoPanel.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
-    infoPanel.BorderSizePixel = 0
-
-    local infoCorner = Instance.new("UICorner", infoPanel)
-    infoCorner.CornerRadius = UDim.new(0, 14)
-
-    local infoLines = {
-        "✨ RAZE SCRIPTS PREMIUM",
-        "📅 VERSION: 2026 | ULTRA EDITION",
-        "🎮 FLY GUI + SETTINGS PANEL",
-        "💜 DISCORD: @raze_scripts"
-    }
-
-    for i, line in ipairs(infoLines) do
-        local lineLabel = Instance.new("TextLabel")
-        lineLabel.Parent = infoPanel
-        lineLabel.Size = UDim2.new(1, -20, 0, 28)
-        lineLabel.Position = UDim2.new(0, 15, 0, 10 + (i-1) * 35)
-        lineLabel.Text = line
-        lineLabel.TextColor3 = Color3.fromRGB(190, 190, 210)
-        lineLabel.TextSize = 14
-        lineLabel.Font = Enum.Font.GothamMedium
-        lineLabel.TextXAlignment = Enum.TextXAlignment.Left
-        lineLabel.BackgroundTransparency = 1
-    end
-
-    -- ============ ЛОГИКА ПОЛЁТА ============
-    uis.InputBegan:Connect(function(i, g)
-        if g then return end
-        local k = i.KeyCode
-        if k == Enum.KeyCode.W then flyKeys.f = 1
-        elseif k == Enum.KeyCode.S then flyKeys.b = 1
-        elseif k == Enum.KeyCode.A then flyKeys.l = 1
-        elseif k == Enum.KeyCode.D then flyKeys.r = 1
-        end
-    end)
-
-    uis.InputEnded:Connect(function(i)
-        local k = i.KeyCode
-        if k == Enum.KeyCode.W then flyKeys.f = 0
-        elseif k == Enum.KeyCode.S then flyKeys.b = 0
-        elseif k == Enum.KeyCode.A then flyKeys.l = 0
-        elseif k == Enum.KeyCode.D then flyKeys.r = 0
-        end
-    end)
-
-    local function setFly(on)
-        flyState = on
-        local c = p.Character
-        if not c or not c.Parent then return end
-        local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
-        local h = c:FindFirstChild("Humanoid")
-        if not torso or not h then return end
-
-        if flyState then
-            vel = Instance.new("BodyVelocity")
-            vel.Parent = torso
-            vel.maxForce = Vector3.new(9e9, 9e9, 9e9)
-            vel.Velocity = Vector3.new(0, 0.1, 0)
-
-            gyro = Instance.new("BodyGyro")
-            gyro.Parent = torso
-            gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-            gyro.P = 9e4
-            gyro.CFrame = torso.CFrame
-
-            h.PlatformStand = true
-            activeFlyBtn.Text = "🔴 ПОЛЁТ АКТИВЕН"
-            activeFlyBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 110)
-        else
-            if vel then vel:Destroy() end
-            if gyro then gyro:Destroy() end
-            if h then h.PlatformStand = false end
-            activeFlyBtn.Text = "🛸 АКТИВИРОВАТЬ ПОЛЁТ"
-            activeFlyBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 160)
-        end
-    end
-
-    rs.Heartbeat:Connect(function()
-        if not flyState then return end
-        local c = p.Character
-        if not c then return end
-        local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
-        if not torso then return end
-
-        local cam = workspace.CurrentCamera
-        local move = Vector3.new(flyKeys.r - flyKeys.l, 0, flyKeys.f - flyKeys.b)
-        if move.Magnitude > 0 then move = move.Unit end
-
-        local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * flySpeed
-        if vel then vel.Velocity = velVec end
-        if gyro then gyro.CFrame = cam.CFrame end
-    end)
-
-    -- КНОПКИ УПРАВЛЕНИЯ
-    activeFlyBtn.MouseButton1Click:Connect(function()
-        setFly(not flyState)
-    end)
-
-    local upConnection
-    upBtn.MouseButton1Down:Connect(function()
-        upConnection = rs.RenderStepped:Connect(function()
-            local c = p.Character
-            if c and c:FindFirstChild("HumanoidRootPart") then
-                c.HumanoidRootPart.CFrame = c.HumanoidRootPart.CFrame * CFrame.new(0, 2.5, 0)
-            end
-        end)
-    end)
-    upBtn.MouseLeave:Connect(function()
-        if upConnection then upConnection:Disconnect() end
-    end)
-
-    local downConnection
-    downBtn.MouseButton1Down:Connect(function()
-        downConnection = rs.RenderStepped:Connect(function()
-            local c = p.Character
-            if c and c:FindFirstChild("HumanoidRootPart") then
-                c.HumanoidRootPart.CFrame = c.HumanoidRootPart.CFrame * CFrame.new(0, -2.5, 0)
-            end
-        end)
+    downBtn.MouseEnter:Connect(function()
+        ts:Create(downBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 200, 250)}):Play()
     end)
     downBtn.MouseLeave:Connect(function()
-        if downConnection then downConnection:Disconnect() end
+        ts:Create(downBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 170, 220)}):Play()
     end)
 
-    plusBtn.MouseButton1Click:Connect(function()
-        flySpeed = math.min(flySpeed + 1, 20)
-        speedValue.Text = flySpeed .. "x"
-        speedValue.TextColor3 = Color3.fromRGB(100, 255, 150)
-        task.wait(0.15)
-        speedValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    -- ПАНЕЛЬ СКОРОСТИ ПОЛЁТА
+    local flySpeedFrame = Instance.new("Frame")
+    flySpeedFrame.Parent = flyContainer
+    flySpeedFrame.Size = UDim2.new(0, 300, 0, 65)
+    flySpeedFrame.Position = UDim2.new(0.5, -150, 0, 155)
+    flySpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
+    flySpeedFrame.BorderSizePixel = 0
+
+    local flySpeedFrameCorner = Instance.new("UICorner", flySpeedFrame)
+    flySpeedFrameCorner.CornerRadius = UDim.new(0, 16)
+
+    local flySpeedLabel = Instance.new("TextLabel")
+    flySpeedLabel.Parent = flySpeedFrame
+    flySpeedLabel.Size = UDim2.new(1, -140, 1, 0)
+    flySpeedLabel.Position = UDim2.new(0, 15, 0, 0)
+    flySpeedLabel.Text = "СКОРОСТЬ ПОЛЁТА"
+    flySpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+    flySpeedLabel.TextSize = 13
+    flySpeedLabel.Font = Enum.Font.GothamMedium
+    flySpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+    flySpeedLabel.BackgroundTransparency = 1
+
+    local flySpeedValue = Instance.new("TextLabel")
+    flySpeedValue.Parent = flySpeedFrame
+    flySpeedValue.Size = UDim2.new(0, 80, 1, 0)
+    flySpeedValue.Position = UDim2.new(0, 15, 0, 25)
+    flySpeedValue.Text = "1x"
+    flySpeedValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    flySpeedValue.TextSize = 28
+    flySpeedValue.Font = Enum.Font.GothamBlack
+    flySpeedValue.TextXAlignment = Enum.TextXAlignment.Left
+    flySpeedValue.BackgroundTransparency = 1
+
+    local flyMinusBtn = Instance.new("TextButton")
+    flyMinusBtn.Parent = flySpeedFrame
+    flyMinusBtn.Size = UDim2.new(0, 55, 0, 45)
+    flyMinusBtn.Position = UDim2.new(1, -125, 0, 10)
+    flyMinusBtn.Text = "−"
+    flyMinusBtn.TextSize = 32
+    flyMinusBtn.TextColor3 = Color3.new(1,1,1)
+    flyMinusBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
+    flyMinusBtn.BorderSizePixel = 0
+
+    local flyMinusCorner = Instance.new("UICorner", flyMinusBtn)
+    flyMinusCorner.CornerRadius = UDim.new(0, 12)
+
+    flyMinusBtn.MouseEnter:Connect(function()
+        ts:Create(flyMinusBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 120)}):Play()
+    end)
+    flyMinusBtn.MouseLeave:Connect(function()
+        ts:Create(flyMinusBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 60, 100)}):Play()
     end)
 
-    minusBtn.MouseButton1Click:Connect(function()
-        flySpeed = math.max(flySpeed - 1, 1)
-        speedValue.Text = flySpeed .. "x"
-        speedValue.TextColor3 = Color3.fromRGB(255, 150, 100)
-        task.wait(0.15)
-        speedValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    local flyPlusBtn = Instance.new("TextButton")
+    flyPlusBtn.Parent = flySpeedFrame
+    flyPlusBtn.Size = UDim2.new(0, 55, 0, 45)
+    flyPlusBtn.Position = UDim2.new(1, -60, 0, 10)
+    flyPlusBtn.Text = "+"
+    flyPlusBtn.TextSize = 32
+    flyPlusBtn.TextColor3 = Color3.new(1,1,1)
+    flyPlusBtn.BackgroundColor3 = Color3.fromRGB(0, 190, 110)
+    flyPlusBtn.BorderSizePixel = 0
+
+    local flyPlusCorner = Instance.new("UICorner", flyPlusBtn)
+    flyPlusCorner.CornerRadius = UDim.new(0, 12)
+
+    flyPlusBtn.MouseEnter:Connect(function()
+        ts:Create(flyPlusBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 230, 140)}):Play()
+    end)
+    flyPlusBtn.MouseLeave:Connect(function()
+        ts:Create(flyPlusBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 190, 110)}):Play()
     end)
 
-    -- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-    flyTab.MouseButton1Click:Connect(function()
-        flyContainer.Visible = true
-        settingsContainer.Visible = false
-        flyTab.TextColor3 = Color3.fromRGB(255, 120, 220)
-        flyTab.BackgroundTransparency = 0
-        settingsTab.TextColor3 = Color3.fromRGB(180, 180, 200)
-        settingsTab.BackgroundTransparency = 0.5
+    -- ============ SPEED TAB (НОВАЯ ВКЛАДКА) ============
+    local walkSpeed = 16
+    local jumpPower = 50
+
+    -- Заголовок WalkSpeed
+    local walkTitle = Instance.new("TextLabel")
+    walkTitle.Parent = speedContainer
+    walkTitle.Size = UDim2.new(1, 0, 0, 35)
+    walkTitle.Position = UDim2.new(0, 0, 0, 5)
+    walkTitle.Text = "🏃 СКОРОСТЬ БЕГА (WalkSpeed)"
+    walkTitle.TextColor3 = Color3.fromRGB(255, 120, 220)
+    walkTitle.TextSize = 15
+    walkTitle.Font = Enum.Font.GothamBold
+    walkTitle.BackgroundTransparency = 1
+
+    -- Панель WalkSpeed
+    local walkFrame = Instance.new("Frame")
+    walkFrame.Parent = speedContainer
+    walkFrame.Size = UDim2.new(1, 0, 0, 65)
+    walkFrame.Position = UDim2.new(0, 0, 0, 45)
+    walkFrame.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
+    walkFrame.BorderSizePixel = 0
+
+    local walkFrameCorner = Instance.new("UICorner", walkFrame)
+    walkFrameCorner.CornerRadius = UDim.new(0, 12)
+
+    local walkValue = Instance.new("TextLabel")
+    walkValue.Parent = walkFrame
+    walkValue.Size = UDim2.new(0, 80, 1, 0)
+    walkValue.Position = UDim2.new(0, 15, 0, 0)
+    walkValue.Text = "16"
+    walkValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    walkValue.TextSize = 28
+    walkValue.Font = Enum.Font.GothamBlack
+    walkValue.TextXAlignment = Enum.TextXAlignment.Left
+    walkValue.BackgroundTransparency = 1
+
+    local walkMinus = Instance.new("TextButton")
+    walkMinus.Parent = walkFrame
+    walkMinus.Size = UDim2.new(0, 55, 0, 45)
+    walkMinus.Position = UDim2.new(1, -125, 0, 10)
+    walkMinus.Text = "−"
+    walkMinus.TextSize = 32
+    walkMinus.TextColor3 = Color3.new(1,1,1)
+    walkMinus.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
+    walkMinus.BorderSizePixel = 0
+
+    local walkMinusCorner = Instance.new("UICorner", walkMinus)
+    walkMinusCorner.CornerRadius = UDim.new(0, 12)
+
+    walkMinus.MouseEnter:Connect(function()
+        ts:Create(walkMinus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 120)}):Play()
+    end)
+    walkMinus.MouseLeave:Connect(function()
+        ts:Create(walkMinus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 60, 100)}):Play()
     end)
 
-    settingsTab.MouseButton1Click:Connect(function()
-        flyContainer.Visible = false
-        settingsContainer.Visible = true
-        settingsTab.TextColor3 = Color3.fromRGB(255, 120, 220)
-        settingsTab.BackgroundTransparency = 0
-        flyTab.TextColor3 = Color3.fromRGB(180, 180, 200)
-        flyTab.BackgroundTransparency = 0.5
+    local walkPlus = Instance.new("TextButton")
+    walkPlus.Parent = walkFrame
+    walkPlus.Size = UDim2.new(0, 55, 0, 45)
+    walkPlus.Position = UDim2.new(1, -60, 0, 10)
+    walkPlus.Text = "+"
+    walkPlus.TextSize = 32
+    walkPlus.TextColor3 = Color3.new(1,1,1)
+    walkPlus.BackgroundColor3 = Color3.fromRGB(0, 190, 110)
+    walkPlus.BorderSizePixel = 0
+
+    local walkPlusCorner = Instance.new("UICorner", walkPlus)
+    walkPlusCorner.CornerRadius = UDim.new(0, 12)
+
+    walkPlus.MouseEnter:Connect(function()
+        ts:Create(walkPlus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 230, 140)}):Play()
+    end)
+    walkPlus.MouseLeave:Connect(function()
+        ts:Create(walkPlus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 190, 110)}):Play()
     end)
 
-    -- СВОРАЧИВАНИЕ
-    local minimized = false
-    local originalSize = bgGradient.Size
-    local originalPos = bgGradient.Position
+    -- Заголовок JumpPower
+    local jumpTitle = Instance.new("TextLabel")
+    jumpTitle.Parent = speedContainer
+    jumpTitle.Size = UDim2.new(1, 0, 0, 35)
+    jumpTitle.Position = UDim2.new(0, 0, 0, 125)
+    jumpTitle.Text = "🦘 СИЛА ПРЫЖКА (JumpPower)"
+    jumpTitle.TextColor3 = Color3.fromRGB(255, 120, 220)
+    jumpTitle.TextSize = 15
+    jumpTitle.Font = Enum.Font.GothamBold
+    jumpTitle.BackgroundTransparency = 1
 
-    minimizeBtn.MouseButton1Click:Connect(function()
-        minimized = not minimized
-        if minimized then
-            ts:Create(bgGradient, TweenInfo.new(0.3), {
-                Size = UDim2.new(0, 200, 0, 50),
-                Position = UDim2.new(1, -220, 0, 50)
-            }):Play()
-            flyContainer.Visible = false
-            settingsContainer.Visible = false
-            flyTab.Visible = false
-            settingsTab.Visible = false
-            minimizeBtn.Text = "□"
-        else
-            ts:Create(bgGradient, TweenInfo.new(0.3), {
-                Size = originalSize,
-                Position = originalPos
-            }):Play()
-            flyContainer.Visible = true
-            settingsContainer.Visible = false
-            flyTab.Visible = true
-            settingsTab.Visible = true
-            minimizeBtn.Text = "−"
+    -- Панель JumpPower
+    local jumpFrame = Instance.new("Frame")
+    jumpFrame.Parent = speedContainer
+    jumpFrame.Size = UDim2.new(1, 0, 0, 65)
+    jumpFrame.Position = UDim2.new(0, 0, 0, 165)
+    jumpFrame.BackgroundColor3 = Color3.fromRGB(25, 18, 45)
+    jumpFrame.BorderSizePixel = 0
+
+    local jumpFrameCorner = Instance.new("UICorner", jumpFrame)
+    jumpFrameCorner.CornerRadius = UDim.new(0, 12)
+
+    local jumpValue = Instance.new("TextLabel")
+    jumpValue.Parent = jumpFrame
+    jumpValue.Size = UDim2.new(0, 80, 1, 0)
+    jumpValue.Position = UDim2.new(0, 15, 0, 0)
+    jumpValue.Text = "50"
+    jumpValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    jumpValue.TextSize = 28
+    jumpValue.Font = Enum.Font.GothamBlack
+    jumpValue.TextXAlignment = Enum.TextXAlignment.Left
+    jumpValue.BackgroundTransparency = 1
+
+    local jumpMinus = Instance.new("TextButton")
+    jumpMinus.Parent = jumpFrame
+    jumpMinus.Size = UDim2.new(0, 55, 0, 45)
+    jumpMinus.Position = UDim2.new(1, -125, 0, 10)
+    jumpMinus.Text = "−"
+    jumpMinus.TextSize = 32
+    jumpMinus.TextColor3 = Color3.new(1,1,1)
+    jumpMinus.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
+    jumpMinus.BorderSizePixel = 0
+
+    local jumpMinusCorner = Instance.new("UICorner", jumpMinus)
+    jumpMinusCorner.CornerRadius = UDim.new(0, 12)
+
+    jumpMinus.MouseEnter:Connect(function()
+        ts:Create(jumpMinus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 120)}):Play()
+    end)
+    jumpMinus.MouseLeave:Connect(function()
+        ts:Create(jumpMinus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 60, 100)}):Play()
+    end)
+
+    local jumpPlus = Instance.new("TextButton")
+    jumpPlus.Parent = jumpFrame
+    jumpPlus.Size = UDim2.new(0, 55, 0, 45)
+    jumpPlus.Position = UDim2.new(1, -60, 0, 10)
+    jumpPlus.Text = "+"
+    jumpPlus.TextSize = 32
+    jumpPlus.TextColor3 = Color3.new(1,1,1)
+    jumpPlus.BackgroundColor3 = Color3.fromRGB(0, 190, 110)
+    jumpPlus.BorderSizePixel = 0
+
+    local jumpPlusCorner = Instance.new("UICorner", jumpPlus)
+    jumpPlusCorner.CornerRadius = UDim.new(0, 12)
+
+    jumpPlus.MouseEnter:Connect(function()
+        ts:Create(jumpPlus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 230, 140)}):Play()
+    end)
+    jumpPlus.MouseLeave:Connect(function()
+        ts:Create(jumpPlus, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 190, 110)}):Play()
+    end)
+
+    -- Кнопка сброса
+    local resetBtn = Instance.new("TextButton")
+    resetBtn.Parent = speedContainer
+    resetBtn.Size = UDim2.new(0, 200, 0, 45)
+    resetBtn.Position = UDim2.new(0.5, -100, 0, 250)
+    resetBtn.Text = "🔄 СБРОС (16 | 50)"
+    resetBtn.TextColor3 = Color3.new(1,1,1)
+    resetBtn.TextSize = 14
+    resetBtn.Font = Enum.Font.GothamBold
+    resetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+    resetBtn.BorderSizePixel = 0
+
+    local resetCorner = Instance.new("UICorner", resetBtn)
+    resetCorner.CornerRadius = UDim.new(0, 25)
+
+    resetBtn.MouseEnter:Connect(function()
+        ts:Create(resetBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 130, 80)}):Play()
+    end)
+    resetBtn.MouseLeave:Connect(function()
+        ts:Create(resetBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 100, 50)}):Play()
+    end)
+
+    -- Функции для изменения скорости
+    local function setWalkSpeed(value)
+        walkSpeed = math.clamp(value, 0, 250)
+        walkValue.Text = tostring(walkSpeed)
+        local c = p.Character
+        if c and c:FindFirstChild("Humanoid") then
+            c.Humanoid.WalkSpeed = walkSpeed
         end
+    end
+
+    local function setJumpPower(value)
+        jumpPower = math.clamp(value, 0, 500)
+        jumpValue.Text = tostring(jumpPower)
+        local c = p.Character
+        if c and c:FindFirstChild("Humanoid") then
+            c.Humanoid.JumpPower = jumpPower
+        end
+    end
+
+    local function resetSpeed()
+        setWalkSpeed(16)
+        setJumpPower(50)
+    end
+
+    -- Обработчики для WalkSpeed
+    walkPlus.MouseButton1Click:Connect(function()
+        setWalkSpeed(walkSpeed + 5)
+        walkValue.TextColor3 = Color3.fromRGB(100, 255, 150)
+        task.wait(0.15)
+        walkValue.TextColor3 = Color3.fromRGB(255, 120, 220)
     end)
 
-    -- ПЕРЕРОЖДЕНИЕ
-    p.CharacterAdded:Connect(function()
-        task.wait(0.5)
-        flyState = false
-        setFly(false)
+    walkMinus.MouseButton1Click:Connect(function()
+        setWalkSpeed(walkSpeed - 5)
+        walkValue.TextColor3 = Color3.fromRGB(255, 150, 100)
+        task.wait(0.15)
+        walkValue.TextColor3 = Color3.fromRGB(255, 120, 220)
     end)
 
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "RAZE SCRIPTS",
-        Text = "Добро пожаловать! Ключ активирован.",
-        Duration = 3
-    })
+    -- Обработчики для JumpPower
+    jumpPlus.MouseButton1Click:Connect(function()
+        setJumpPower(jumpPower + 10)
+        jumpValue.TextColor3 = Color3.fromRGB(100, 255, 150)
+        task.wait(0.15)
+        jumpValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    end)
 
-    print("⚡ RAZE SCRIPTS ULTRA LOADED — Нажми FLY")
-end
+    jumpMinus.MouseButton1Click:Connect(function()
+        setJumpPower(jumpPower - 10)
+        jumpValue.TextColor3 = Color3.fromRGB(255, 150, 100)
+        task.wait(0.15)
+        jumpValue.TextColor3 = Color3.fromRGB(255, 120, 220)
+    end)
 
--- Если ключ уже был введён ранее (на случай перезапуска)
-if keyAccepted then
-    keyGui:Destroy()
-    LoadMainGUI()
-end
+    -- Сброс
+    resetBtn.MouseButton1Click:Connect(function()
+        resetSpeed()
+        resetBtn.Text = "✅ СБРОШЕНО!"
+        task.wait(1)
+        resetBtn.Text = "
