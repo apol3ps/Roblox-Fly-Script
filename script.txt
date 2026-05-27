@@ -1,0 +1,505 @@
+-- RAZE SCRIPTS | FLY GUI 2026 (FIXED)
+local p = game.Players.LocalPlayer
+local ts = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+local rs = game:GetService("RunService")
+
+-- MAIN GUI
+local main = Instance.new("ScreenGui")
+main.Name = "RazeScripts"
+main.Parent = p:WaitForChild("PlayerGui")
+main.ResetOnSpawn = false
+
+-- ОСНОВНОЕ ОКНО
+local bgGradient = Instance.new("Frame")
+bgGradient.Name = "BackgroundGlow"
+bgGradient.Parent = main
+bgGradient.Size = UDim2.new(0, 400, 0, 500)
+bgGradient.Position = UDim2.new(0.5, -200, 0.5, -250)
+bgGradient.BackgroundColor3 = Color3.fromRGB(10, 5, 20)
+bgGradient.BorderSizePixel = 0
+bgGradient.Active = true
+bgGradient.Draggable = true
+
+local bgCorner = Instance.new("UICorner", bgGradient)
+bgCorner.CornerRadius = UDim.new(0, 16)
+
+local bgStroke = Instance.new("UIStroke", bgGradient)
+bgStroke.Color = Color3.fromRGB(150, 50, 200)
+bgStroke.Thickness = 2
+
+-- ЗАГОЛОВОК
+local titleBar = Instance.new("Frame")
+titleBar.Parent = bgGradient
+titleBar.Size = UDim2.new(1, 0, 0, 45)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(30, 15, 50)
+titleBar.BorderSizePixel = 0
+
+local titleCorner = Instance.new("UICorner", titleBar)
+titleCorner.CornerRadius = UDim.new(0, 16)
+
+local titleText = Instance.new("TextLabel")
+titleText.Parent = titleBar
+titleText.Size = UDim2.new(1, -80, 1, 0)
+titleText.Position = UDim2.new(0, 15, 0, 0)
+titleText.BackgroundTransparency = 1
+titleText.Text = "⚡ RAZE SCRIPTS ⚡"
+titleText.TextColor3 = Color3.fromRGB(255, 100, 200)
+titleText.TextSize = 18
+titleText.Font = Enum.Font.GothamBold
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+
+-- КНОПКИ ЗАГОЛОВКА
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Parent = titleBar
+minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+minimizeBtn.Position = UDim2.new(1, -70, 0, 8)
+minimizeBtn.Text = "−"
+minimizeBtn.TextSize = 24
+minimizeBtn.TextColor3 = Color3.new(1,1,1)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 30, 80)
+minimizeBtn.BorderSizePixel = 0
+
+local minCorner = Instance.new("UICorner", minimizeBtn)
+minCorner.CornerRadius = UDim.new(0, 8)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Parent = titleBar
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 8)
+closeBtn.Text = "✕"
+closeBtn.TextSize = 18
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.BackgroundColor3 = Color3.fromRGB(50, 30, 80)
+closeBtn.BorderSizePixel = 0
+
+local closeCorner = Instance.new("UICorner", closeBtn)
+closeCorner.CornerRadius = UDim.new(0, 8)
+
+closeBtn.MouseButton1Click:Connect(function()
+    main:Destroy()
+end)
+
+-- ПАНЕЛЬ ВКЛАДОК
+local flyBtn = Instance.new("TextButton")
+flyBtn.Parent = bgGradient
+flyBtn.Size = UDim2.new(0, 100, 0, 35)
+flyBtn.Position = UDim2.new(0, 20, 0, 55)
+flyBtn.Text = "FLY"
+flyBtn.TextColor3 = Color3.fromRGB(255, 100, 200)
+flyBtn.TextSize = 14
+flyBtn.Font = Enum.Font.GothamBold
+flyBtn.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+flyBtn.BorderSizePixel = 0
+
+local flyCorner2 = Instance.new("UICorner", flyBtn)
+flyCorner2.CornerRadius = UDim.new(0, 10)
+
+local settingsBtn = Instance.new("TextButton")
+settingsBtn.Parent = bgGradient
+settingsBtn.Size = UDim2.new(0, 100, 0, 35)
+settingsBtn.Position = UDim2.new(0, 130, 0, 55)
+settingsBtn.Text = "SETTINGS"
+settingsBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+settingsBtn.TextSize = 14
+settingsBtn.Font = Enum.Font.GothamMedium
+settingsBtn.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+settingsBtn.BackgroundTransparency = 0.5
+settingsBtn.BorderSizePixel = 0
+
+local setCorner = Instance.new("UICorner", settingsBtn)
+setCorner.CornerRadius = UDim.new(0, 10)
+
+-- КОНТЕЙНЕРЫ
+local flyContainer = Instance.new("Frame")
+flyContainer.Parent = bgGradient
+flyContainer.Size = UDim2.new(1, -40, 1, -140)
+flyContainer.Position = UDim2.new(0, 20, 0, 100)
+flyContainer.BackgroundTransparency = 1
+
+local settingsContainer = Instance.new("Frame")
+settingsContainer.Parent = bgGradient
+settingsContainer.Size = UDim2.new(1, -40, 1, -140)
+settingsContainer.Position = UDim2.new(0, 20, 0, 100)
+settingsContainer.BackgroundTransparency = 1
+settingsContainer.Visible = false
+
+-- ============ FLY TAB ============
+local flyState = false
+local vel, gyro
+local flySpeed = 1
+local flyKeys = {f=0, b=0, l=0, r=0}
+
+-- КНОПКА АКТИВАЦИИ
+local activeFlyBtn = Instance.new("TextButton")
+activeFlyBtn.Parent = flyContainer
+activeFlyBtn.Size = UDim2.new(0, 200, 0, 50)
+activeFlyBtn.Position = UDim2.new(0.5, -100, 0, 20)
+activeFlyBtn.Text = "🛸 АКТИВИРОВАТЬ ПОЛЁТ"
+activeFlyBtn.TextColor3 = Color3.new(1,1,1)
+activeFlyBtn.TextSize = 16
+activeFlyBtn.Font = Enum.Font.GothamBold
+activeFlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
+activeFlyBtn.BorderSizePixel = 0
+
+local activeCorner = Instance.new("UICorner", activeFlyBtn)
+activeCorner.CornerRadius = UDim.new(0, 25)
+
+-- КНОПКИ UP/DOWN
+local upBtn = Instance.new("TextButton")
+upBtn.Parent = flyContainer
+upBtn.Size = UDim2.new(0, 85, 0, 45)
+upBtn.Position = UDim2.new(0.5, -95, 0, 90)
+upBtn.Text = "▲ UP"
+upBtn.TextColor3 = Color3.new(1,1,1)
+upBtn.TextSize = 14
+upBtn.Font = Enum.Font.GothamBold
+upBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+upBtn.BorderSizePixel = 0
+
+local upCorner2 = Instance.new("UICorner", upBtn)
+upCorner2.CornerRadius = UDim.new(0, 15)
+
+local downBtn = Instance.new("TextButton")
+downBtn.Parent = flyContainer
+downBtn.Size = UDim2.new(0, 85, 0, 45)
+downBtn.Position = UDim2.new(0.5, 10, 0, 90)
+downBtn.Text = "▼ DOWN"
+downBtn.TextColor3 = Color3.new(1,1,1)
+downBtn.TextSize = 14
+downBtn.Font = Enum.Font.GothamBold
+downBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+downBtn.BorderSizePixel = 0
+
+local downCorner2 = Instance.new("UICorner", downBtn)
+downCorner2.CornerRadius = UDim.new(0, 15)
+
+-- СКОРОСТЬ
+local speedFrame = Instance.new("Frame")
+speedFrame.Parent = flyContainer
+speedFrame.Size = UDim2.new(0, 200, 0, 50)
+speedFrame.Position = UDim2.new(0.5, -100, 0, 155)
+speedFrame.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+speedFrame.BorderSizePixel = 0
+
+local speedCornerF = Instance.new("UICorner", speedFrame)
+speedCornerF.CornerRadius = UDim.new(0, 12)
+
+local speedValue = Instance.new("TextLabel")
+speedValue.Parent = speedFrame
+speedValue.Size = UDim2.new(1, 0, 1, 0)
+speedValue.Text = "1x"
+speedValue.TextColor3 = Color3.fromRGB(255, 100, 200)
+speedValue.TextSize = 24
+speedValue.Font = Enum.Font.GothamBold
+speedValue.BackgroundTransparency = 1
+
+local minusBtn = Instance.new("TextButton")
+minusBtn.Parent = speedFrame
+minusBtn.Size = UDim2.new(0, 50, 0, 35)
+minusBtn.Position = UDim2.new(1, -110, 0, 8)
+minusBtn.Text = "-"
+minusBtn.TextSize = 25
+minusBtn.TextColor3 = Color3.new(1,1,1)
+minusBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 100)
+minusBtn.BorderSizePixel = 0
+
+local minusCorner2 = Instance.new("UICorner", minusBtn)
+minusCorner2.CornerRadius = UDim.new(0, 10)
+
+local plusBtn = Instance.new("TextButton")
+plusBtn.Parent = speedFrame
+plusBtn.Size = UDim2.new(0, 50, 0, 35)
+plusBtn.Position = UDim2.new(1, -50, 0, 8)
+plusBtn.Text = "+"
+plusBtn.TextSize = 25
+plusBtn.TextColor3 = Color3.new(1,1,1)
+plusBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+plusBtn.BorderSizePixel = 0
+
+local plusCorner2 = Instance.new("UICorner", plusBtn)
+plusCorner2.CornerRadius = UDim.new(0, 10)
+
+-- ============ SETTINGS TAB ============
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Parent = settingsContainer
+infoLabel.Size = UDim2.new(1, 0, 0, 30)
+infoLabel.Position = UDim2.new(0, 0, 0, 10)
+infoLabel.Text = "📌 ИНФОРМАЦИЯ"
+infoLabel.TextColor3 = Color3.fromRGB(255, 100, 200)
+infoLabel.TextSize = 16
+infoLabel.Font = Enum.Font.GothamBold
+infoLabel.BackgroundTransparency = 1
+
+local usernameBox = Instance.new("Frame")
+usernameBox.Parent = settingsContainer
+usernameBox.Size = UDim2.new(1, 0, 0, 45)
+usernameBox.Position = UDim2.new(0, 0, 0, 50)
+usernameBox.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+usernameBox.BorderSizePixel = 0
+
+local userCorner2 = Instance.new("UICorner", usernameBox)
+userCorner2.CornerRadius = UDim.new(0, 10)
+
+local usernameValue = Instance.new("TextLabel")
+usernameValue.Parent = usernameBox
+usernameValue.Size = UDim2.new(1, -80, 1, 0)
+usernameValue.Position = UDim2.new(0, 15, 0, 0)
+usernameValue.Text = "👤 " .. p.Name
+usernameValue.TextColor3 = Color3.new(1,1,1)
+usernameValue.TextSize = 16
+usernameValue.Font = Enum.Font.GothamBold
+usernameValue.TextXAlignment = Enum.TextXAlignment.Left
+usernameValue.BackgroundTransparency = 1
+
+local copyBtn = Instance.new("TextButton")
+copyBtn.Parent = usernameBox
+copyBtn.Size = UDim2.new(0, 50, 0, 30)
+copyBtn.Position = UDim2.new(1, -60, 0, 8)
+copyBtn.Text = "📋"
+copyBtn.TextSize = 16
+copyBtn.TextColor3 = Color3.new(1,1,1)
+copyBtn.BackgroundColor3 = Color3.fromRGB(50, 30, 80)
+copyBtn.BorderSizePixel = 0
+
+local copyCorner2 = Instance.new("UICorner", copyBtn)
+copyCorner2.CornerRadius = UDim.new(0, 8)
+
+copyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(p.Name)
+    elseif toclipboard then
+        toclipboard(p.Name)
+    end
+    usernameValue.TextColor3 = Color3.fromRGB(100, 255, 100)
+    task.wait(0.5)
+    usernameValue.TextColor3 = Color3.new(1,1,1)
+end)
+
+-- ИНФО БЛОК
+local infoFrame = Instance.new("Frame")
+infoFrame.Parent = settingsContainer
+infoFrame.Size = UDim2.new(1, 0, 0, 130)
+infoFrame.Position = UDim2.new(0, 0, 0, 110)
+infoFrame.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+infoFrame.BorderSizePixel = 0
+
+local infoCorner3 = Instance.new("UICorner", infoFrame)
+infoCorner3.CornerRadius = UDim.new(0, 10)
+
+local line1 = Instance.new("TextLabel")
+line1.Parent = infoFrame
+line1.Size = UDim2.new(1, -20, 0, 25)
+line1.Position = UDim2.new(0, 10, 0, 10)
+line1.Text = "✨ RAZE SCRIPTS PREMIUM"
+line1.TextColor3 = Color3.fromRGB(200, 200, 200)
+line1.TextSize = 13
+line1.Font = Enum.Font.GothamMedium
+line1.TextXAlignment = Enum.TextXAlignment.Left
+line1.BackgroundTransparency = 1
+
+local line2 = Instance.new("TextLabel")
+line2.Parent = infoFrame
+line2.Size = UDim2.new(1, -20, 0, 25)
+line2.Position = UDim2.new(0, 10, 0, 40)
+line2.Text = "📅 VERSION: 2026 | ULTRA"
+line2.TextColor3 = Color3.fromRGB(200, 200, 200)
+line2.TextSize = 13
+line2.Font = Enum.Font.GothamMedium
+line2.TextXAlignment = Enum.TextXAlignment.Left
+line2.BackgroundTransparency = 1
+
+local line3 = Instance.new("TextLabel")
+line3.Parent = infoFrame
+line3.Size = UDim2.new(1, -20, 0, 25)
+line3.Position = UDim2.new(0, 10, 0, 70)
+line3.Text = "🎮 FLY GUI + SETTINGS"
+line3.TextColor3 = Color3.fromRGB(200, 200, 200)
+line3.TextSize = 13
+line3.Font = Enum.Font.GothamMedium
+line3.TextXAlignment = Enum.TextXAlignment.Left
+line3.BackgroundTransparency = 1
+
+local line4 = Instance.new("TextLabel")
+line4.Parent = infoFrame
+line4.Size = UDim2.new(1, -20, 0, 25)
+line4.Position = UDim2.new(0, 10, 0, 100)
+line4.Text = "💜 DISCORD: @raze_scripts"
+line4.TextColor3 = Color3.fromRGB(200, 200, 200)
+line4.TextSize = 13
+line4.Font = Enum.Font.GothamMedium
+line4.TextXAlignment = Enum.TextXAlignment.Left
+line4.BackgroundTransparency = 1
+
+-- ============ ЛОГИКА ПОЛЁТА ============
+uis.InputBegan:Connect(function(i, g)
+    if g then return end
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then flyKeys.f = 1
+    elseif k == Enum.KeyCode.S then flyKeys.b = 1
+    elseif k == Enum.KeyCode.A then flyKeys.l = 1
+    elseif k == Enum.KeyCode.D then flyKeys.r = 1
+    end
+end)
+
+uis.InputEnded:Connect(function(i)
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then flyKeys.f = 0
+    elseif k == Enum.KeyCode.S then flyKeys.b = 0
+    elseif k == Enum.KeyCode.A then flyKeys.l = 0
+    elseif k == Enum.KeyCode.D then flyKeys.r = 0
+    end
+end)
+
+local function setFly(on)
+    flyState = on
+    local c = p.Character
+    if not c or not c.Parent then return end
+    local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+    local h = c:FindFirstChild("Humanoid")
+    if not torso or not h then return end
+    
+    if flyState then
+        vel = Instance.new("BodyVelocity")
+        vel.Parent = torso
+        vel.maxForce = Vector3.new(9e9, 9e9, 9e9)
+        vel.Velocity = Vector3.new(0, 0.1, 0)
+        
+        gyro = Instance.new("BodyGyro")
+        gyro.Parent = torso
+        gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+        gyro.P = 9e4
+        gyro.CFrame = torso.CFrame
+        
+        h.PlatformStand = true
+        activeFlyBtn.Text = "🔴 ПОЛЁТ АКТИВЕН"
+        activeFlyBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+    else
+        if vel then vel:Destroy() end
+        if gyro then gyro:Destroy() end
+        if h then h.PlatformStand = false end
+        activeFlyBtn.Text = "🛸 АКТИВИРОВАТЬ ПОЛЁТ"
+        activeFlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
+    end
+end
+
+-- ЦИКЛ ПОЛЁТА
+rs.Heartbeat:Connect(function()
+    if not flyState then return end
+    local c = p.Character
+    if not c then return end
+    local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+    local h = c:FindFirstChild("Humanoid")
+    if not torso or not h then return end
+    
+    local cam = workspace.CurrentCamera
+    local move = Vector3.new(flyKeys.r - flyKeys.l, 0, flyKeys.f - flyKeys.b)
+    if move.Magnitude > 0 then move = move.Unit end
+    
+    local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * flySpeed
+    if vel then vel.Velocity = velVec end
+    if gyro then gyro.CFrame = cam.CFrame end
+end)
+
+-- КНОПКИ УПРАВЛЕНИЯ
+activeFlyBtn.MouseButton1Click:Connect(function()
+    setFly(not flyState)
+end)
+
+local upCon
+upBtn.MouseButton1Down:Connect(function()
+    upCon = rs.RenderStepped:Connect(function()
+        local c = p.Character
+        if c and c:FindFirstChild("HumanoidRootPart") then
+            c.HumanoidRootPart.CFrame = c.HumanoidRootPart.CFrame * CFrame.new(0, 2, 0)
+        end
+    end)
+end)
+upBtn.MouseLeave:Connect(function()
+    if upCon then upCon:Disconnect() end
+end)
+
+local downCon
+downBtn.MouseButton1Down:Connect(function()
+    downCon = rs.RenderStepped:Connect(function()
+        local c = p.Character
+        if c and c:FindFirstChild("HumanoidRootPart") then
+            c.HumanoidRootPart.CFrame = c.HumanoidRootPart.CFrame * CFrame.new(0, -2, 0)
+        end
+    end)
+end)
+downBtn.MouseLeave:Connect(function()
+    if downCon then downCon:Disconnect() end
+end)
+
+plusBtn.MouseButton1Click:Connect(function()
+    flySpeed = math.min(flySpeed + 1, 20)
+    speedValue.Text = flySpeed.."x"
+end)
+
+minusBtn.MouseButton1Click:Connect(function()
+    flySpeed = math.max(flySpeed - 1, 1)
+    speedValue.Text = flySpeed.."x"
+end)
+
+-- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+flyBtn.MouseButton1Click:Connect(function()
+    flyContainer.Visible = true
+    settingsContainer.Visible = false
+    flyBtn.TextColor3 = Color3.fromRGB(255, 100, 200)
+    flyBtn.BackgroundTransparency = 0
+    settingsBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    settingsBtn.BackgroundTransparency = 0.5
+end)
+
+settingsBtn.MouseButton1Click:Connect(function()
+    flyContainer.Visible = false
+    settingsContainer.Visible = true
+    settingsBtn.TextColor3 = Color3.fromRGB(255, 100, 200)
+    settingsBtn.BackgroundTransparency = 0
+    flyBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    flyBtn.BackgroundTransparency = 0.5
+end)
+
+-- СВОРАЧИВАНИЕ
+local minimized = false
+local originalSize = bgGradient.Size
+local originalPos = bgGradient.Position
+
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        bgGradient.Size = UDim2.new(0, 200, 0, 45)
+        bgGradient.Position = UDim2.new(1, -210, 0, 50)
+        flyContainer.Visible = false
+        settingsContainer.Visible = false
+        flyBtn.Visible = false
+        settingsBtn.Visible = false
+        minimizeBtn.Text = "□"
+    else
+        bgGradient.Size = originalSize
+        bgGradient.Position = originalPos
+        flyContainer.Visible = true
+        settingsContainer.Visible = false
+        flyBtn.Visible = true
+        settingsBtn.Visible = true
+        minimizeBtn.Text = "−"
+    end
+end)
+
+-- ПЕРЕРОЖДЕНИЕ
+p.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    flyState = false
+    setFly(false)
+end)
+
+-- УВЕДОМЛЕНИЕ
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "RAZE SCRIPTS",
+    Text = "Загружен! Нажми FLY для полёта",
+    Duration = 3
+})
+
+print("⚡ RAZE SCRIPTS LOADED — Нажми FLY")
