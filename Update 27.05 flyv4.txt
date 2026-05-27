@@ -1,0 +1,268 @@
+-- NEON FLY GUI — сочный ультра-стиль
+local p = game.Players.LocalPlayer
+local ts = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+
+-- Главное окно
+local m = Instance.new("ScreenGui")
+m.Parent = p:WaitForChild("PlayerGui")
+m.ResetOnSpawn = false
+m.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local f = Instance.new("Frame")
+f.Parent = m
+f.Size = UDim2.new(0, 220, 0, 260)
+f.Position = UDim2.new(0.5, -110, 0.5, -130)
+f.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+f.BorderSizePixel = 0
+f.ClipsDescendants = true
+
+-- Скругление углов
+local corner = Instance.new("UICorner", f)
+corner.CornerRadius = UDim.new(0, 12)
+
+-- Тень
+local shadow = Instance.new("Frame", f)
+shadow.Size = UDim2.new(1, 0, 1, 0)
+shadow.Position = UDim2.new(0.02, 0, 0.02, 0)
+shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+shadow.BackgroundTransparency = 0.7
+shadow.BorderSizePixel = 0
+local shadowCorner = Instance.new("UICorner", shadow)
+shadowCorner.CornerRadius = UDim.new(0, 12)
+
+-- Гламурная обводка
+local outline = Instance.new("Frame", f)
+outline.Size = UDim2.new(1, 0, 1, 0)
+outline.BackgroundTransparency = 1
+outline.BorderSizePixel = 2
+outline.BorderColor3 = Color3.fromRGB(100, 0, 255)
+local outlineCorner = Instance.new("UICorner", outline)
+outlineCorner.CornerRadius = UDim.new(0, 12)
+
+-- Заголовок
+local title = Instance.new("TextLabel", f)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundColor3 = Color3.fromRGB(40, 0, 80)
+title.Text = "🌀 NEON FLY V4"
+title.TextColor3 = Color3.fromRGB(200, 150, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.BorderSizePixel = 0
+local titleCorner = Instance.new("UICorner", title)
+titleCorner.CornerRadius = UDim.new(0, 12)
+
+-- Анимация пульсации заголовка
+local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local pulse = ts:Create(title, tweenInfo, {TextColor3 = Color3.fromRGB(255, 100, 255)})
+pulse:Play()
+
+-- Кнопки с неоном
+local btns = {"FLY", "UP", "DOWN", "+", "-"}
+local btnY = {50, 100, 150, 200, 200}
+local btnColors = {
+    Color3.fromRGB(255, 50, 100),
+    Color3.fromRGB(0, 200, 255),
+    Color3.fromRGB(0, 200, 255),
+    Color3.fromRGB(0, 255, 150),
+    Color3.fromRGB(0, 255, 150)
+}
+local btnText = {"✈ FLY", "▲ UP", "▼ DOWN", "➕", "➖"}
+
+local buttons = {}
+
+for i, name in ipairs(btns) do
+    local btn = Instance.new("TextButton", f)
+    btn.Size = UDim2.new(0, 100, 0, 35)
+    btn.Position = UDim2.new(0.5, -50, 0, btnY[i])
+    btn.Text = btnText[i]
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.TextScaled = true
+    btn.Font = Enum.Font.GothamBold
+    btn.BackgroundColor3 = btnColors[i]
+    btn.BorderSizePixel = 0
+    btn.AutoButtonColor = false
+    
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 20)
+    
+    -- Неоновая тень под кнопкой
+    local glow = Instance.new("Frame", btn)
+    glow.Size = UDim2.new(1, 0, 0.2, 0)
+    glow.Position = UDim2.new(0, 0, 1, 0)
+    glow.BackgroundColor3 = btnColors[i]
+    glow.BackgroundTransparency = 0.5
+    glow.BorderSizePixel = 0
+    local glowCorner = Instance.new("UICorner", glow)
+    glowCorner.CornerRadius = UDim.new(0, 10)
+    
+    -- Ховер-эффект
+    btn.MouseEnter:Connect(function()
+        ts:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.3}):Play()
+        ts:Create(glow, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        ts:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+        ts:Create(glow, TweenInfo.new(0.2), {BackgroundTransparency = 0.5}):Play()
+    end)
+    
+    buttons[name] = btn
+end
+
+-- Индикатор скорости
+local speedFrame = Instance.new("Frame", f)
+speedFrame.Size = UDim2.new(0, 80, 0, 35)
+speedFrame.Position = UDim2.new(0.5, -40, 0, 210)
+speedFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+speedFrame.BorderSizePixel = 0
+local speedCorner = Instance.new("UICorner", speedFrame)
+speedCorner.CornerRadius = UDim.new(0, 10)
+
+local speedLabel = Instance.new("TextLabel", speedFrame)
+speedLabel.Size = UDim2.new(1, 0, 1, 0)
+speedLabel.Text = "1x"
+speedLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
+speedLabel.TextScaled = true
+speedLabel.Font = Enum.Font.GothamBlack
+speedLabel.BackgroundTransparency = 1
+
+-- Логика полёта (та же, но с визуальными фишками)
+local fly = false
+local vel, gyro
+local speed = 1
+local keys = {f=0,b=0,l=0,r=0}
+
+-- Эффект при включении полёта
+local function flyFlash()
+    local flash = Instance.new("Frame", f)
+    flash.Size = UDim2.new(1, 0, 1, 0)
+    flash.BackgroundColor3 = Color3.fromRGB(100, 0, 255)
+    flash.BackgroundTransparency = 0.8
+    flash.BorderSizePixel = 0
+    ts:Create(flash, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+    game:GetService("Debris"):AddItem(flash, 0.5)
+end
+
+-- Управление
+uis.InputBegan:Connect(function(i)
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then keys.f = 1
+    elseif k == Enum.KeyCode.S then keys.b = 1
+    elseif k == Enum.KeyCode.A then keys.l = 1
+    elseif k == Enum.KeyCode.D then keys.r = 1
+    end
+end)
+uis.InputEnded:Connect(function(i)
+    local k = i.KeyCode
+    if k == Enum.KeyCode.W then keys.f = 0
+    elseif k == Enum.KeyCode.S then keys.b = 0
+    elseif k == Enum.KeyCode.A then keys.l = 0
+    elseif k == Enum.KeyCode.D then keys.r = 0
+    end
+end)
+
+local function setFly(on)
+    fly = on
+    local c = p.Character
+    if not c then return end
+    local torso = c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso")
+    local h = c.Humanoid
+    if not torso or not h then return end
+    
+    if fly then
+        flyFlash()
+        vel = Instance.new("BodyVelocity", torso)
+        vel.maxForce = Vector3.new(1e9, 1e9, 1e9)
+        gyro = Instance.new("BodyGyro", torso)
+        gyro.maxTorque = Vector3.new(1e9, 1e9, 1e9)
+        gyro.P = 9e4
+        h.PlatformStand = true
+        h:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+        buttons.FLY.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+    else
+        if vel then vel:Destroy() end
+        if gyro then gyro:Destroy() end
+        h.PlatformStand = false
+        h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+        buttons.FLY.BackgroundColor3 = Color3.fromRGB(255, 50, 100)
+    end
+end
+
+-- Цикл полёта
+game:GetService("RunService").Heartbeat:Connect(function()
+    if not fly or not p.Character then return end
+    local cam = workspace.CurrentCamera
+    local move = Vector3.new(keys.r - keys.l, 0, keys.f - keys.b)
+    if move.Magnitude > 0 then move = move.Unit end
+    local velVec = (cam.CFrame.RightVector * move.X + cam.CFrame.LookVector * move.Z) * 50 * speed
+    if vel then vel.Velocity = velVec end
+    if gyro then gyro.CFrame = cam.CFrame end
+end)
+
+-- Кнопки
+buttons.FLY.MouseButton1Click:Connect(function() setFly(not fly) end)
+
+buttons.UP.MouseButton1Down:Connect(function()
+    local con = game:GetService("RunService").RenderStepped:Connect(function()
+        if p.Character and p.Character.HumanoidRootPart then
+            p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, 2, 0)
+        end
+    end)
+    buttons.UP.MouseLeave:Connect(function() con:Disconnect() end)
+end)
+
+buttons.DOWN.MouseButton1Down:Connect(function()
+    local con = game:GetService("RunService").RenderStepped:Connect(function()
+        if p.Character and p.Character.HumanoidRootPart then
+            p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, -2, 0)
+        end
+    end)
+    buttons.DOWN.MouseLeave:Connect(function() con:Disconnect() end)
+end)
+
+buttons["+"].MouseButton1Click:Connect(function()
+    speed = math.min(speed + 1, 20)
+    speedLabel.Text = speed.."x"
+    -- Визуальный фидбек
+    speedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    task.wait(0.1)
+    speedLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
+end)
+
+buttons["-"].MouseButton1Click:Connect(function()
+    speed = math.max(speed - 1, 1)
+    speedLabel.Text = speed.."x"
+    speedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    task.wait(0.1)
+    speedLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
+end)
+
+-- Перерождение
+p.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    fly = false
+    setFly(false)
+end)
+
+-- Перетаскивание окна
+local dragging, dragInput, dragStart, startPos
+f.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = f.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+f.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        f.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+print("🔥 NEON FLY GUI LOADED — ЖМИ ✈ FLY")
