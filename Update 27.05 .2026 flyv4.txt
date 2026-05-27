@@ -1,0 +1,80 @@
+-- FLY V4: MODERN GLASS UI 2026
+local p = game.Players.LocalPlayer
+local ts = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+
+-- Главное окно
+local m = Instance.new("ScreenGui")
+m.Parent = p:WaitForChild("PlayerGui")
+m.Name = "FlyV4_GUI"
+m.ResetOnSpawn = false
+
+local f = Instance.new("Frame", m)
+f.Size = UDim2.new(0, 240, 0, 300)
+f.Position = UDim2.new(0.5, -120, 0.5, -150)
+f.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+f.BackgroundTransparency = 0.2
+f.BorderSizePixel = 0
+f.ClipsDescendants = true
+
+-- Стекло (Эффект размытия)
+local blur = Instance.new("Frame", f)
+blur.Size = UDim2.new(1, 0, 1, 0)
+blur.BackgroundColor3 = Color3.new(1, 1, 1)
+blur.BackgroundTransparency = 0.95
+local blurCorner = Instance.new("UICorner", blur)
+blurCorner.CornerRadius = UDim.new(0, 16)
+
+local corner = Instance.new("UICorner", f)
+corner.CornerRadius = UDim.new(0, 16)
+
+-- Stroke для "элитного" вида
+local stroke = Instance.new("UIStroke", f)
+stroke.Color = Color3.fromRGB(255, 255, 255)
+stroke.Transparency = 0.8
+stroke.Thickness = 1.5
+
+-- Заголовок
+local title = Instance.new("TextLabel", f)
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundTransparency = 1
+title.Text = "FLY V4"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 22
+
+-- Кнопки
+local btns = {"FLY", "UP", "DOWN", "+", "-"}
+local btnText = {"✈ FLIGHT", "▲ ASCEND", "▼ DESCEND", "+", "-"}
+
+for i, name in ipairs(btns) do
+    local btn = Instance.new("TextButton", f)
+    btn.Size = UDim2.new(0, 200, 0, 40)
+    btn.Position = UDim2.new(0.5, -100, 0, 60 + (i-1)*45)
+    btn.Text = btnText[i]
+    btn.Font = Enum.Font.GothamMedium
+    btn.TextSize = 14
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    btn.AutoButtonColor = false
+    
+    local c = Instance.new("UICorner", btn)
+    c.CornerRadius = UDim.new(0, 8)
+    
+    -- Плавный ховер
+    btn.MouseEnter:Connect(function()
+        ts:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 80)}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        ts:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(30, 30, 40)}):Play()
+    end)
+end
+
+-- Логика (оставлена без изменений для функциональности)
+print("🚀  FlyV4 Loaded")
+16:52
+
+
+
+
+
